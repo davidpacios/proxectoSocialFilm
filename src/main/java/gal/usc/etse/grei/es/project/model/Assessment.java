@@ -14,13 +14,13 @@ public class Assessment {
     private String id;
     private Integer rating;
     private User user;
-    private Movie movie;
+    private Film movie;
     private String comment;
 
     public Assessment() {
     }
 
-    public Assessment(String id, Integer rating, User user, Movie movie, String comment) {
+    public Assessment(String id, Integer rating, User user, Film movie, String comment) {
         this.id = id;
         this.rating = rating;
         this.user = user;
@@ -40,7 +40,7 @@ public class Assessment {
         return user;
     }
 
-    public Movie getMovie() {
+    public Film getMovie() {
         return movie;
     }
 
@@ -63,7 +63,7 @@ public class Assessment {
         return this;
     }
 
-    public Assessment setMovie(Movie movie) {
+    public Assessment setMovie(Film movie) {
         this.movie = movie;
         return this;
     }

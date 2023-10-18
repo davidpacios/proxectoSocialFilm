@@ -1,8 +1,8 @@
 package gal.usc.etse.grei.es.project.controller;
 
 import com.github.fge.jsonpatch.JsonPatchException;
-import gal.usc.etse.grei.es.project.model.Movie;
-import gal.usc.etse.grei.es.project.service.MovieService;
+import gal.usc.etse.grei.es.project.model.Film;
+import gal.usc.etse.grei.es.project.service.FilmService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
@@ -19,18 +19,18 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("movies")
-public class MovieController {
-    private final MovieService movieService;
+public class FilmController {
+    private final FilmService filmService;
 
     @Autowired
-    public MovieController(MovieService movies) {
-        this.movieService = movies;
+    public FilmController(FilmService films) {
+        this.filmService = films;
     }
 
     @GetMapping(
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    ResponseEntity<Page<Movie>> get(
+    ResponseEntity<Page<Film>> get(
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size,
             @RequestParam(name = "sort", defaultValue = "") List<String> sort
@@ -45,26 +45,26 @@ public class MovieController {
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
 
-        return ResponseEntity.of(movieService.get(page, size, Sort.by(criteria)));
+        return ResponseEntity.of(filmService.get(page, size, Sort.by(criteria)));
     }
 
     @GetMapping(
             path = "{id}",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    ResponseEntity<Movie> get(@PathVariable("id") String id) {
-        return ResponseEntity.of(movieService.get(id));
+    ResponseEntity<Film> get(@PathVariable("id") String id) {
+        return ResponseEntity.of(filmService.get(id));
     }
 
     @PostMapping
-    public ResponseEntity<Movie> addMovie(@RequestBody @Valid Movie movie) {
-        return new ResponseEntity<Movie>(movieService.addMovie(movie), HttpStatus.CREATED);
+    public ResponseEntity<Film> addFilm(@RequestBody @Valid Film film) {
+        return new ResponseEntity<Film>(filmService.addFilm(film), HttpStatus.CREATED);
     }
 
 
     @DeleteMapping("{id}")
-    public ResponseEntity<Void> deleteMovie(@PathVariable("id") String id) {
-        movieService.deleteMovie(id);
+    public ResponseEntity<Void> deleteFilm(@PathVariable("id") String id) {
+        filmService.deleteFilm(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -74,10 +74,12 @@ public class MovieController {
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public ResponseEntity<Movie> patchMovie(@PathVariable("id") String id, @RequestBody List<Map<String, Object>> updates) throws JsonPatchException {
-        Movie updatedMovie = movieService.updateMovie(id, updates);
-        return ResponseEntity.ok(updatedMovie);
+    public ResponseEntity<Film> patchFilm(@PathVariable("id") String id, @RequestBody List<Map<String, Object>> updates) throws JsonPatchException {
+        Film updatedFilm = filmService.updateFilm(id, updates);
+        return ResponseEntity.ok(updatedFilm);
     }
+
+
 
     
 

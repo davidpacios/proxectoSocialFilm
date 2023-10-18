@@ -2,8 +2,12 @@ package gal.usc.etse.grei.es.project.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Immutable;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
@@ -12,23 +16,37 @@ import java.util.StringJoiner;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class User {
     @Id
+    private String id;
+    @NotBlank @Email
     private String email;
+    @NotNull @NotBlank
     private String name;
     private String country;
     private String picture;
+    @NotNull
     private Date birthday;
     private List<User> friends;
 
     public User() {
     }
 
-    public User(String email, String name, String country, String picture, Date birthday, List<User> friends) {
+    public User(String id, String email, String name, String country, String picture, Date birthday, List<User> friends) {
+        this.id = id;
         this.email = email;
         this.name = name;
         this.country = country;
         this.picture = picture;
         this.birthday = birthday;
         this.friends = friends;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public User setId(String id) {
+        this.id = id;
+        return this;
     }
 
     public String getEmail() {
