@@ -8,6 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
@@ -25,7 +26,7 @@ public class User {
     private String picture;
     @NotNull
     private Date birthday;
-    private List<User> friends;
+    private List<User> friends= new ArrayList<>();
 
     public User() {
     }
@@ -37,7 +38,6 @@ public class User {
         this.country = country;
         this.picture = picture;
         this.birthday = birthday;
-        this.friends = friends;
     }
 
     public String getId() {

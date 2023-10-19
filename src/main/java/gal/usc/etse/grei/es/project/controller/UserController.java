@@ -5,14 +5,17 @@ import gal.usc.etse.grei.es.project.model.Film;
 import gal.usc.etse.grei.es.project.model.User;
 import gal.usc.etse.grei.es.project.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("users")
@@ -35,6 +38,7 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<User> addUser(@RequestBody @Valid User user) {
+
         return new ResponseEntity<User>(userService.addUser(user), HttpStatus.CREATED);
     }
 
@@ -53,5 +57,63 @@ public class UserController {
         User updatedUser = userService.updateUser(id, updates);
         return ResponseEntity.ok(updatedUser);
     }
+
+    //TODO preguntar si hay que dar de alta al amigo en la base de datos si no existe
+    //TODO preguntar si se puede hacer como un patch dentro del post
+    //TODO preguntar si se hace con un post esto y si las rutas están bien
+    @PostMapping("/{id}/friend")
+    public ResponseEntity<User> addFriend(@PathVariable("id") String id, @RequestBody User friend) throws JsonPatchException {
+
+        if (friend.getEmail() == null || friend.getName() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El email y el nombre son campos obligatorios.");
+        }
+
+        User user = userService.get(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario no encontrado: " + id));
+        User amigo = userService.getUserByEmail(friend.getEmail());
+        if (amigo == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Amigo no dado de alta en la base de datos.");
+        }
+
+        if (user.getFriends() != null && user.getFriends().stream().anyMatch(f -> f.getEmail().equals(friend.getEmail()))) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El amigo ya está en la lista de amigos.");
+        }
+
+
+        user.getFriends().add(amigo);
+        Map<String, Object> updateMap = new HashMap<>();
+        updateMap.put("op", "add");
+        updateMap.put("path", "/friends");
+        updateMap.put("value", user.getFriends());
+
+        List<Map<String, Object>> updates = Collections.singletonList(updateMap);
+        userService.updateUser(id, updates);
+
+        return ResponseEntity.ok(user);
+    }
+
+
+    @DeleteMapping("/{userId}/friend/{friendId}")
+    public ResponseEntity<User> deleteFriend(@PathVariable("userId") String userId, @PathVariable("friendId") String friendId) throws JsonPatchException {
+        User user = userService.get(userId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario no encontrado: " + userId));
+
+        // Verificar si el amigo existe en la lista de amigos
+        boolean friendExists = user.getFriends() != null && user.getFriends().removeIf(friend -> friend.getId().equals(friendId));
+
+        if (!friendExists) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El amigo no se encontró en la lista de amigos.");
+        }
+
+        // Actualizar la lista de amigos en la base de datos
+        Map<String, Object> updateMap = new HashMap<>();
+        updateMap.put("op", "replace");
+        updateMap.put("path", "/friends");
+        updateMap.put("value", user.getFriends());
+
+        List<Map<String, Object>> updates = Collections.singletonList(updateMap);
+        userService.updateUser(userId, updates);
+
+        return ResponseEntity.ok(user);
+    }
+
 
 }
