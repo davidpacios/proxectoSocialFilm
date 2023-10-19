@@ -17,10 +17,10 @@
 
 | <!-- -->      | <!-- -->        |
 |:-------------:|:---------------:|
-| OObter os comentarios dunha película | ✔️ |
+| Obter os comentarios dunha película |  |
 | Obter os comentarios dun usuario |    |
-| Engadir un novo comentario a unha película | ✔️ |
-| Modificar un comentario | ✔️ |
+| Engadir un novo comentario a unha película |  |
+| Modificar un comentario |  |
 | Eliminar un comentario  |    |
 
 ### Películas
