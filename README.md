@@ -2,7 +2,8 @@
 
 ### Usuarios
 
-|----------|----------|
+| <!-- -->      | <!-- -->        |
+|:-------------:|:---------------:|
 | Obter un usuario concreto | ✔️ |
 | Obter unha listaxe con tódolos usuarios |    |
 | Eliminar un usuario | ✔️ |
