@@ -25,7 +25,7 @@
 | <!-- -->      | <!-- -->        |
 |:-------------:|:---------------:|
 | Obter unha película | ✔️ |
-| Obter tódalas películas | ✔️ |
+| Obter tódalas películas |  |
 | Crear unha nova película | ✔️ |
 | Modificar unha película | ✔️ |
 | Eliminar unha película  | ✔️ |
