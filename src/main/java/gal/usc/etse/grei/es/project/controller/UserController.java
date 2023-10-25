@@ -58,9 +58,7 @@ public class UserController {
         return ResponseEntity.ok(updatedUser);
     }
 
-    //TODO preguntar si hay que dar de alta al amigo en la base de datos si no existe
-    //TODO preguntar si se puede hacer como un patch dentro del post
-    //TODO preguntar si se hace con un post esto y si las rutas están bien
+    
     @PostMapping("/{id}/friend")
     public ResponseEntity<User> addFriend(@PathVariable("id") String id, @RequestBody User friend) throws JsonPatchException {
 

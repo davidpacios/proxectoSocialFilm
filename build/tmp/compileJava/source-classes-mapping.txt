@@ -36,7 +36,13 @@ gal/usc/etse/grei/es/project/service/UserService.java
  gal.usc.etse.grei.es.project.service.UserService
 gal/usc/etse/grei/es/project/model/User.java
  gal.usc.etse.grei.es.project.model.User
-gal/usc/etse/grei/es/project/controller/UserController.java
- gal.usc.etse.grei.es.project.controller.UserController
 gal/usc/etse/grei/es/project/repository/UserRepository.java
  gal.usc.etse.grei.es.project.repository.UserRepository
+gal/usc/etse/grei/es/project/controller/UserController.java
+ gal.usc.etse.grei.es.project.controller.UserController
+gal/usc/etse/grei/es/project/controller/CommentsController.java
+ gal.usc.etse.grei.es.project.controller.CommentsController
+gal/usc/etse/grei/es/project/repository/CommentsRepository.java
+ gal.usc.etse.grei.es.project.repository.CommentsRepository
+gal/usc/etse/grei/es/project/service/CommentsService.java
+ gal.usc.etse.grei.es.project.service.CommentsService

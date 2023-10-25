@@ -3,6 +3,8 @@ package gal.usc.etse.grei.es.project.model;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 import java.util.Objects;
 import java.util.StringJoiner;
@@ -12,9 +14,13 @@ import java.util.StringJoiner;
 public class Assessment {
     @Id
     private String id;
+    @NotNull
     private Integer rating;
+    @NotNull
     private User user;
+    @NotNull
     private Film movie;
+    @NotBlank @NotNull
     private String comment;
 
     public Assessment() {
