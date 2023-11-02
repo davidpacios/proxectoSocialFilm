@@ -2,6 +2,8 @@ package gal.usc.etse.grei.es.project.controller;
 
 import javax.validation.Valid;
 
+import com.github.fge.jsonpatch.JsonPatchException;
+import gal.usc.etse.grei.es.project.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -12,6 +14,7 @@ import gal.usc.etse.grei.es.project.model.Assessment;
 import gal.usc.etse.grei.es.project.service.CommentsService;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("comments")
@@ -48,6 +51,23 @@ public class CommentsController {
         return commentsService.getCommentsByUserId(userId);
     }
 
+
+    @GetMapping("/movie/{movieId}")
+    public List<Assessment> getCommentsByMovieId(@PathVariable String movieId) {
+        return commentsService.getCommentsByMovieId(movieId);
+    }
+
+
+    //TODO EN TODOS LOS PATCH NOS FALTA COMRPOBACION DE QUE EL ID REALMENTE ES VALIDO
+    @PatchMapping(
+            path = "{id}",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity<Assessment> patchUser(@PathVariable("id") String id, @RequestBody List<Map<String, Object>> updates) throws JsonPatchException {
+        Assessment updatedComment = commentsService.updateComment(id, updates);
+        return ResponseEntity.ok(updatedComment);
+    }
 
 
 }

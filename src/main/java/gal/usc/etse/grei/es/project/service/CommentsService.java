@@ -1,8 +1,10 @@
 package gal.usc.etse.grei.es.project.service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
+import com.github.fge.jsonpatch.JsonPatchException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -38,9 +40,7 @@ public class CommentsService {
         return commentsRepository.findById(id);
     }
 
-    //TODO mirar el friends de la persona que se añade al comentario
     //TODO como nosotros implementamos id en el usuario, lo metemos como obligario aqui tb ademas del nombre e email
-    //TODO comprobaciones que pone los campos son obligatorios
     public Assessment addComment(Assessment comentario) {
         Optional<User> userOptional = userRepository.findById(comentario.getUser().getId());
         if (!userOptional.isPresent()) {
@@ -96,5 +96,29 @@ public class CommentsService {
         return comments;
 
     }
+
+    public List<Assessment> getCommentsByMovieId(String movieId) {
+        Optional<Film> filmOptional = filmRepository.findById(movieId);
+        if (!filmOptional.isPresent()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Pelicula no encontrada");
+        }
+
+        // Obtener los comentarios de la pelicula por su ID
+        List<Assessment> comments = commentsRepository.findByMovieId(movieId);
+        if (comments.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No se encontraron comentarios para la pelicula con ID " + movieId);
+        }
+
+        return comments;
+
+    }
+
+
+    public Assessment updateComment(String id, List<Map<String, Object>> updates) throws JsonPatchException {
+        Assessment comment = commentsRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid comment Id:" + id));
+        comment = patchUtils.patch(comment, updates);
+        return commentsRepository.save(comment);
+    }
+
 
 }

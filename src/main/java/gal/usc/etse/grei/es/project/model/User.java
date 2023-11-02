@@ -26,7 +26,7 @@ public class User {
     private String picture;
     @NotNull
     private Date birthday;
-    private List<User> friends= new ArrayList<>();
+    private List<User> friends;
 
     public User() {
     }
@@ -38,6 +38,7 @@ public class User {
         this.country = country;
         this.picture = picture;
         this.birthday = birthday;
+        this.friends = friends;
     }
 
     public String getId() {

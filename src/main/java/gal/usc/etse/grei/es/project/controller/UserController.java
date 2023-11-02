@@ -58,7 +58,7 @@ public class UserController {
         return ResponseEntity.ok(updatedUser);
     }
 
-    
+    //TODO PREGUNTAR POR CORREO SI HACE FALTA EN EL CAMPO AMIGO MOSTRAR TODO LO QUE SABEMOS DE ESA PERSONA (TODOS LOS CAMPOS) O SOLO LOS INTRODUCIDOS
     @PostMapping("/{id}/friend")
     public ResponseEntity<User> addFriend(@PathVariable("id") String id, @RequestBody User friend) throws JsonPatchException {
 
@@ -72,12 +72,26 @@ public class UserController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Amigo no dado de alta en la base de datos.");
         }
 
-        if (user.getFriends() != null && user.getFriends().stream().anyMatch(f -> f.getEmail().equals(friend.getEmail()))) {
+        //comprobar que el nombre e email del amigo coinciden
+        if (!amigo.getName().equals(friend.getName()) || !amigo.getEmail().equals(friend.getEmail()))
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"El nombre y el email del amigo no coinciden");
+
+
+        if (user.getFriends() == null) {
+            user.setFriends(new ArrayList<>());
+        }
+
+        if (user.getFriends().stream().anyMatch(f -> f.getEmail().equals(friend.getEmail()))) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El amigo ya está en la lista de amigos.");
         }
 
+        //mirar si como amigo se está intentando añadir a uno mismo
+        if (user.getEmail().equals(friend.getEmail())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No se puede añadir a uno mismo como amigo.");
+        }
 
-        user.getFriends().add(amigo);
+        friend.setId(amigo.getId());
+        user.getFriends().add(friend);
         Map<String, Object> updateMap = new HashMap<>();
         updateMap.put("op", "add");
         updateMap.put("path", "/friends");

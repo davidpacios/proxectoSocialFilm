@@ -8,6 +8,7 @@ import java.util.List;
 public interface CommentsRepository extends MongoRepository <Assessment, String> {
 
     List<Assessment> findByUserId(String userId);
+    List<Assessment> findByMovieId(String filmId);
 
 
 
