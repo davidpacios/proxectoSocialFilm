@@ -1,13 +1,10 @@
 package gal.usc.etse.grei.es.project.service;
 
 import com.github.fge.jsonpatch.JsonPatchException;
-import gal.usc.etse.grei.es.project.model.Film;
+import gal.usc.etse.grei.es.project.model.*;
 import gal.usc.etse.grei.es.project.repository.FilmRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -46,7 +43,6 @@ public class FilmService {
         return films.save(film);
     }
 
-
     public void deleteFilm(String id) {
         films.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid movie Id:" + id));
         films.deleteById(id);
@@ -58,5 +54,39 @@ public class FilmService {
         return films.save(film);
     }
 
+    public Page<Film> getAllFilms(int page, int size, String sort, String keyword, String genre, String cast, String releaseDate) {
+        Pageable request = PageRequest.of(page, size, Sort.by(sort).ascending());
+        ExampleMatcher matcher = ExampleMatcher.matching().withIgnoreCase().withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING);
+        if(genre != null){
+            //Añadir genre a una lista que solo tenga ese elemento
+            List<String> genres = List.of(genre);
+            return films.findAll(Example.of(new Film().setGenres(genres), matcher), request);
+        }
 
+        if(releaseDate != null){
+            //transformar releaseDate a Date
+            Date date = new Date();
+            String[] parts = releaseDate.split("/");
+            date.setDay(Integer.parseInt(parts[0]));
+            date.setMonth(Integer.parseInt(parts[1]));
+            date.setYear(Integer.parseInt(parts[2]));
+            return films.findAll(Example.of(new Film().setReleaseDate(date), matcher), request);
+        }
+
+        if(keyword != null){
+            //Solo devolver los atributos id, title, overview, genres, releaseDate e resources
+            List<String> keywords = List.of(keyword.split(","));
+            return films.findAll(Example.of(new Film().setKeywords(keywords), matcher), request);
+        }
+
+        //No se puede buscar por cast no funciona
+        if(cast != null){
+            //Solo devolver los atributos id, title, overview, genres, releaseDate e resources
+            List<Cast> castList = List.of((Cast) new Cast().setName(cast));
+            return films.findAll(Example.of(new Film().setCast(castList), matcher), request);
+        }
+
+        //Solo devolver los atributos id, title, overview, genres, releaseDate e resources
+        return films.findAll(request).map( f -> new Film().setId(f.getId()).setTitle(f.getTitle()).setOverview(f.getOverview()).setGenres(f.getGenres()).setReleaseDate(f.getReleaseDate()).setResources(f.getResources()));
+    }
 }

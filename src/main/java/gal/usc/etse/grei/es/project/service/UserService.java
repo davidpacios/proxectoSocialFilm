@@ -6,6 +6,7 @@ import gal.usc.etse.grei.es.project.model.User;
 import gal.usc.etse.grei.es.project.repository.FilmRepository;
 import gal.usc.etse.grei.es.project.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -60,5 +61,29 @@ public class UserService {
         }
         User user1 = patchUtils.patch(user, updates);
         return userRepository.save(user1);
+    }
+
+    public Page<User> getAllUsers(int page, int size, String sort, String name, String email) {
+        Pageable request = PageRequest.of(page, size, Sort.by(sort).ascending());
+        ExampleMatcher matcher = ExampleMatcher.matching().withIgnoreCase().withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING);
+
+        if(name == null && email == null){
+            return userRepository.findAll(PageRequest.of(page, size, Sort.by(sort).ascending())).map(u -> new User().setName(u.getName()).setEmail(u.getEmail()).setBirthday(u.getBirthday()).setCountry(u.getCountry()));
+        }
+
+        if(name != null && email != null){
+            Example<User> filter = Example.of(new User().setEmail(email).setName(name), matcher);
+            return userRepository.findAll(filter, request).map(u -> new User().setName(u.getName()).setEmail(u.getEmail()).setBirthday(u.getBirthday()).setCountry(u.getCountry()));
+        }
+
+        if(name != null){
+            Example<User> filter = Example.of(new User().setName(name), matcher);
+            return userRepository.findAll(filter, request).map(u -> new User().setName(u.getName()).setEmail(u.getEmail()).setBirthday(u.getBirthday()).setCountry(u.getCountry()));
+        }
+
+        Example<User> filter = Example.of(new User().setEmail(email), matcher);
+        //Devolver todos los campos del usuario menos el id
+        return userRepository.findAll(filter, request).map(u -> new User().setName(u.getName()).setEmail(u.getEmail()).setBirthday(u.getBirthday()).setCountry(u.getCountry()));
+
     }
 }

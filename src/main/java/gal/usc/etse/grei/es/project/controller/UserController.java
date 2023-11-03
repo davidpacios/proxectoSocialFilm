@@ -28,12 +28,20 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping(
-            path = "{id}",
-            produces = MediaType.APPLICATION_JSON_VALUE
-    )
+    @GetMapping(path = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<User> get(@PathVariable("id") String id) {
         return ResponseEntity.of(userService.get(id));
+    }
+
+    //Get all users
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Page<User>> getAllUsers(@RequestParam(value = "page", defaultValue = "0") int page,
+                                                  @RequestParam(value = "size", defaultValue = "10") int size,
+                                                  @RequestParam(value = "sort", defaultValue = "id") String sort,
+                                                  @RequestParam(value = "name", required = false) String name,
+                                                  @RequestParam(value = "email", required = false) String email){
+
+        return ResponseEntity.ok(userService.getAllUsers(page, size, sort, name, email));
     }
 
     @PostMapping
@@ -48,11 +56,7 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PatchMapping(
-            path = "{id}",
-            consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE
-    )
+    @PatchMapping(path = "{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<User> patchUser(@PathVariable("id") String id, @RequestBody List<Map<String, Object>> updates) throws JsonPatchException {
         User updatedUser = userService.updateUser(id, updates);
         return ResponseEntity.ok(updatedUser);
@@ -74,7 +78,7 @@ public class UserController {
 
         //comprobar que el nombre e email del amigo coinciden
         if (!amigo.getName().equals(friend.getName()) || !amigo.getEmail().equals(friend.getEmail()))
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"El nombre y el email del amigo no coinciden");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El nombre y el email del amigo no coinciden");
 
 
         if (user.getFriends() == null) {
