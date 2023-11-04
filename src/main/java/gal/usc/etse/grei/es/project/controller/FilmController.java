@@ -2,11 +2,9 @@ package gal.usc.etse.grei.es.project.controller;
 
 import com.github.fge.jsonpatch.JsonPatchException;
 import gal.usc.etse.grei.es.project.model.Film;
-import gal.usc.etse.grei.es.project.model.User;
 import gal.usc.etse.grei.es.project.service.FilmService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -15,8 +13,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("movies")
@@ -51,9 +47,8 @@ public class FilmController {
 
     @PostMapping
     public ResponseEntity<Film> addFilm(@RequestBody @Valid Film film) {
-        return new ResponseEntity<Film>(filmService.addFilm(film), HttpStatus.CREATED);
+        return new ResponseEntity<>(filmService.addFilm(film), HttpStatus.CREATED);
     }
-
 
     @DeleteMapping("{id}")
     public ResponseEntity<Void> deleteFilm(@PathVariable("id") String id) {
@@ -61,7 +56,6 @@ public class FilmController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    
     @PatchMapping(
             path = "{id}",
             consumes = MediaType.APPLICATION_JSON_VALUE,

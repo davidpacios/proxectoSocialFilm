@@ -1,12 +1,10 @@
 package gal.usc.etse.grei.es.project.controller;
 
 import com.github.fge.jsonpatch.JsonPatchException;
-import gal.usc.etse.grei.es.project.model.Film;
 import gal.usc.etse.grei.es.project.model.User;
 import gal.usc.etse.grei.es.project.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +13,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("users")
@@ -30,7 +27,7 @@ public class UserController {
 
     @GetMapping(path = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<User> get(@PathVariable("id") String id) {
-        return ResponseEntity.of(userService.get(id));
+        return ResponseEntity.of(userService.getUserById(id));
     }
 
     //Get all users
@@ -46,8 +43,7 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<User> addUser(@RequestBody @Valid User user) {
-
-        return new ResponseEntity<User>(userService.addUser(user), HttpStatus.CREATED);
+        return new ResponseEntity<>(userService.addUser(user), HttpStatus.CREATED);
     }
 
     @DeleteMapping("{id}")
@@ -70,7 +66,7 @@ public class UserController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El email y el nombre son campos obligatorios.");
         }
 
-        User user = userService.get(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario no encontrado: " + id));
+        User user = userService.getUserById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario no encontrado: " + id));
         User amigo = userService.getUserByEmail(friend.getEmail());
         if (amigo == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Amigo no dado de alta en la base de datos.");
@@ -110,7 +106,7 @@ public class UserController {
 
     @DeleteMapping("/{userId}/friend/{friendId}")
     public ResponseEntity<User> deleteFriend(@PathVariable("userId") String userId, @PathVariable("friendId") String friendId) throws JsonPatchException {
-        User user = userService.get(userId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario no encontrado: " + userId));
+        User user = userService.getUserById(userId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario no encontrado: " + userId));
 
         // Verificar si el amigo existe en la lista de amigos
         boolean friendExists = user.getFriends() != null && user.getFriends().removeIf(friend -> friend.getId().equals(friendId));

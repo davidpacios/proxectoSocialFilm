@@ -25,7 +25,6 @@ public class CommentsService {
     private final UserRepository userRepository;
     private final FilmRepository filmRepository;
 
-
     @Autowired
     private PatchUtils patchUtils;
 
@@ -92,9 +91,7 @@ public class CommentsService {
         if (comments.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No se encontraron comentarios para el usuario con ID " + userId);
         }
-
         return comments;
-
     }
 
     public List<Assessment> getCommentsByMovieId(String movieId) {
@@ -112,7 +109,6 @@ public class CommentsService {
         return comments;
 
     }
-
 
     public Assessment updateComment(String id, List<Map<String, Object>> updates) throws JsonPatchException {
         Assessment comment = commentsRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid comment Id:" + id));

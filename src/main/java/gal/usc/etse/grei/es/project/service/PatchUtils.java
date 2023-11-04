@@ -21,7 +21,7 @@ public class PatchUtils {
     }
 
     @SuppressWarnings("unchecked")
-    public <T> T patch(T data, List<Map<String, Object>> updates) throws JsonPatchException, JsonPatchException {
+    public <T> T patch(T data, List<Map<String, Object>> updates) throws  JsonPatchException {
         // Translate the set of operations to a JsonPatch instance
         JsonPatch operations = mapper.convertValue(updates, JsonPatch.class);
         // Translate domain object to plain JSON node

@@ -1,9 +1,7 @@
 package gal.usc.etse.grei.es.project.service;
 
 import com.github.fge.jsonpatch.JsonPatchException;
-import gal.usc.etse.grei.es.project.model.Film;
 import gal.usc.etse.grei.es.project.model.User;
-import gal.usc.etse.grei.es.project.repository.FilmRepository;
 import gal.usc.etse.grei.es.project.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
@@ -28,7 +26,7 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public Optional<User> get(String id) {
+    public Optional<User> getUserById(String id) {
         return userRepository.findById(id);
     }
 
@@ -38,10 +36,8 @@ public class UserService {
 
     public User addUser(User user) {
         User u = getUserByEmail(user.getEmail());
-        if(u == null){
-            return userRepository.save(user);
-        }
-        throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"El usuario ya existe con el correo electrónico proporcionado.");
+        if(u == null)  throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"El usuario ya existe con el correo electrónico proporcionado.");
+        return userRepository.save(user);
     }
 
     public void deleteUser(String id) {
@@ -52,11 +48,10 @@ public class UserService {
     public User updateUser(String id, List<Map<String, Object>> updates) throws JsonPatchException {
         User user = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid user Id:" + id));
         for (Map<String, Object> update : updates) {
-            if (update.containsKey("path")) {
-                String path = (String) update.get("path");
-                if (path.equals("/email") || path.equals("/birthday"))
+            if (update.containsKey("path")) { //Si el update contiene el campo path
+                String path = (String) update.get("path"); //Obtenemos el path
+                if (path.equals("/email") || path.equals("/birthday")) //Si el path es email o birthday
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"No se puede realizar la modificación.");
-
             }
         }
         User user1 = patchUtils.patch(user, updates);
@@ -67,23 +62,15 @@ public class UserService {
         Pageable request = PageRequest.of(page, size, Sort.by(sort).ascending());
         ExampleMatcher matcher = ExampleMatcher.matching().withIgnoreCase().withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING);
 
-        if(name == null && email == null){
-            return userRepository.findAll(PageRequest.of(page, size, Sort.by(sort).ascending())).map(u -> new User().setName(u.getName()).setEmail(u.getEmail()).setBirthday(u.getBirthday()).setCountry(u.getCountry()));
-        }
+        if(name == null && email == null)
+            return userRepository.findAll(request).map(u -> new User().setName(u.getName()).setEmail(u.getEmail()).setBirthday(u.getBirthday()).setCountry(u.getCountry()));
 
-        if(name != null && email != null){
-            Example<User> filter = Example.of(new User().setEmail(email).setName(name), matcher);
-            return userRepository.findAll(filter, request).map(u -> new User().setName(u.getName()).setEmail(u.getEmail()).setBirthday(u.getBirthday()).setCountry(u.getCountry()));
-        }
+        if(name != null && email != null)
+            return userRepository.findAll(Example.of(new User().setEmail(email).setName(name), matcher), request).map(u -> new User().setName(u.getName()).setEmail(u.getEmail()).setBirthday(u.getBirthday()).setCountry(u.getCountry()));
 
-        if(name != null){
-            Example<User> filter = Example.of(new User().setName(name), matcher);
-            return userRepository.findAll(filter, request).map(u -> new User().setName(u.getName()).setEmail(u.getEmail()).setBirthday(u.getBirthday()).setCountry(u.getCountry()));
-        }
+        if(name != null)
+            return userRepository.findAll(Example.of(new User().setName(name), matcher), request).map(u -> new User().setName(u.getName()).setEmail(u.getEmail()).setBirthday(u.getBirthday()).setCountry(u.getCountry()));
 
-        Example<User> filter = Example.of(new User().setEmail(email), matcher);
-        //Devolver todos los campos del usuario menos el id
-        return userRepository.findAll(filter, request).map(u -> new User().setName(u.getName()).setEmail(u.getEmail()).setBirthday(u.getBirthday()).setCountry(u.getCountry()));
-
+        return userRepository.findAll(Example.of(new User().setEmail(email), matcher), request).map(u -> new User().setName(u.getName()).setEmail(u.getEmail()).setBirthday(u.getBirthday()).setCountry(u.getCountry()));
     }
 }
