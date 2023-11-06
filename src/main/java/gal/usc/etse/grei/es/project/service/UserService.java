@@ -63,14 +63,14 @@ public class UserService {
         ExampleMatcher matcher = ExampleMatcher.matching().withIgnoreCase().withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING);
 
         if(name == null && email == null)
-            return userRepository.findAll(request).map(u -> new User().setName(u.getName()).setEmail(u.getEmail()).setBirthday(u.getBirthday()).setCountry(u.getCountry()));
+            return userRepository.findAll(request).map(u -> new User().setName(u.getName()).setBirthday(u.getBirthday()).setCountry(u.getCountry()));
 
         if(name != null && email != null)
-            return userRepository.findAll(Example.of(new User().setEmail(email).setName(name), matcher), request).map(u -> new User().setName(u.getName()).setEmail(u.getEmail()).setBirthday(u.getBirthday()).setCountry(u.getCountry()));
+            return userRepository.findAll(Example.of(new User().setEmail(email).setName(name), matcher), request).map(u -> new User().setName(u.getName()).setBirthday(u.getBirthday()).setCountry(u.getCountry()));
 
         if(name != null)
-            return userRepository.findAll(Example.of(new User().setName(name), matcher), request).map(u -> new User().setName(u.getName()).setEmail(u.getEmail()).setBirthday(u.getBirthday()).setCountry(u.getCountry()));
+            return userRepository.findAll(Example.of(new User().setName(name), matcher), request).map(u -> new User().setName(u.getName()).setBirthday(u.getBirthday()).setCountry(u.getCountry()));
 
-        return userRepository.findAll(Example.of(new User().setEmail(email), matcher), request).map(u -> new User().setName(u.getName()).setEmail(u.getEmail()).setBirthday(u.getBirthday()).setCountry(u.getCountry()));
+        return userRepository.findAll(Example.of(new User().setEmail(email), matcher), request).map(u -> new User().setName(u.getName()).setBirthday(u.getBirthday()).setCountry(u.getCountry()));
     }
 }

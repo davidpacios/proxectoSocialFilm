@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -43,16 +44,26 @@ public class FilmService {
     }
 
     public Page<Film> getAllFilms(int page, int size, String sort, String keyword, String genre, String cast, String releaseDate) {
-        Pageable request = PageRequest.of(page, size, Sort.by(sort).ascending());
+       Pageable request = PageRequest.of(page, size, Sort.by(sort).ascending());
         ExampleMatcher matcher = ExampleMatcher.matching().withIgnoreCase().withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING);
-        List<Cast> castList = null;
+        List<String> castList = null;
         List<String> genres = null;
         List<String> keywords = null;
         Date date = null;
 
-        if (genre != null) genres = List.of(genre.split(","));
-        if (keyword != null) keywords = List.of(keyword.split(","));
-        if (cast != null) castList = List.of((Cast) new Cast().setName(cast));
+        if (genre != null) {
+            genres = Arrays.asList(genre.split(","));
+        }
+
+        if (keyword != null) {
+            keywords = Arrays.asList(keyword.split(","));
+        }
+
+        if (cast != null) {
+            castList = Arrays.asList(cast.split(","));
+        }
+
+
         if (releaseDate != null) {
             date = new Date();
             String[] parts = releaseDate.split("/");
@@ -62,11 +73,11 @@ public class FilmService {
         }
 
         if (genre != null && keyword != null && cast != null && releaseDate != null)
-            return films.findAll(Example.of(new Film().setGenres(genres).setKeywords(keywords).setCast(castList).setReleaseDate(date), matcher), request)
+            return films.findAll(Example.of(new Film().setGenres(genres).setKeywords(keywords).setReleaseDate(date), matcher), request)
                     .map(f -> new Film().setId(f.getId()).setTitle(f.getTitle()).setOverview(f.getOverview()).setGenres(f.getGenres()).setReleaseDate(f.getReleaseDate()));
 
         if (genre != null && keyword != null && cast != null)
-            return films.findAll(Example.of(new Film().setGenres(genres).setKeywords(keywords).setCast(castList), matcher), request)
+            return films.findAll(Example.of(new Film().setGenres(genres).setKeywords(keywords), matcher), request)
                     .map(f -> new Film().setId(f.getId()).setTitle(f.getTitle()).setOverview(f.getOverview()).setGenres(f.getGenres()).setReleaseDate(f.getReleaseDate()));
 
         if (genre != null && keyword != null && releaseDate != null)
@@ -74,11 +85,11 @@ public class FilmService {
                     .map(f -> new Film().setId(f.getId()).setTitle(f.getTitle()).setOverview(f.getOverview()).setGenres(f.getGenres()).setReleaseDate(f.getReleaseDate()));
 
         if (genre != null && cast != null && releaseDate != null)
-            return films.findAll(Example.of(new Film().setGenres(genres).setCast(castList).setReleaseDate(date), matcher), request)
+            return films.findAll(Example.of(new Film().setGenres(genres).setReleaseDate(date), matcher), request)
                     .map(f -> new Film().setId(f.getId()).setTitle(f.getTitle()).setOverview(f.getOverview()).setGenres(f.getGenres()).setReleaseDate(f.getReleaseDate()));
 
         if (keyword != null && cast != null && releaseDate != null)
-            return films.findAll(Example.of(new Film().setKeywords(keywords).setCast(castList).setReleaseDate(date), matcher), request)
+            return films.findAll(Example.of(new Film().setKeywords(keywords).setReleaseDate(date), matcher), request)
                     .map(f -> new Film().setId(f.getId()).setTitle(f.getTitle()).setOverview(f.getOverview()).setGenres(f.getGenres()).setReleaseDate(f.getReleaseDate()));
 
         if (genre != null && keyword != null)
@@ -86,7 +97,7 @@ public class FilmService {
                     .map(f -> new Film().setId(f.getId()).setTitle(f.getTitle()).setOverview(f.getOverview()).setGenres(f.getGenres()).setReleaseDate(f.getReleaseDate()));
 
         if (genre != null && cast != null)
-            return films.findAll(Example.of(new Film().setGenres(genres).setCast(castList), matcher), request)
+            return films.findAll(Example.of(new Film().setGenres(genres), matcher), request)
                     .map(f -> new Film().setId(f.getId()).setTitle(f.getTitle()).setOverview(f.getOverview()).setGenres(f.getGenres()).setReleaseDate(f.getReleaseDate()));
 
         if (genre != null && releaseDate != null)
@@ -94,7 +105,7 @@ public class FilmService {
                     .map(f -> new Film().setId(f.getId()).setTitle(f.getTitle()).setOverview(f.getOverview()).setGenres(f.getGenres()).setReleaseDate(f.getReleaseDate()));
 
         if (keyword != null && cast != null)
-            return films.findAll(Example.of(new Film().setKeywords(keywords).setCast(castList), matcher), request)
+            return films.findAll(Example.of(new Film().setKeywords(keywords), matcher), request)
                     .map(f -> new Film().setId(f.getId()).setTitle(f.getTitle()).setOverview(f.getOverview()).setGenres(f.getGenres()).setReleaseDate(f.getReleaseDate()));
 
         if (keyword != null && releaseDate != null)
@@ -102,7 +113,7 @@ public class FilmService {
                     .map(f -> new Film().setId(f.getId()).setTitle(f.getTitle()).setOverview(f.getOverview()).setGenres(f.getGenres()).setReleaseDate(f.getReleaseDate()));
 
         if (cast != null && releaseDate != null)
-            return films.findAll(Example.of(new Film().setCast(castList).setReleaseDate(date), matcher), request)
+            return films.findAll(Example.of(new Film().setReleaseDate(date), matcher), request)
                     .map(f -> new Film().setId(f.getId()).setTitle(f.getTitle()).setOverview(f.getOverview()).setGenres(f.getGenres()).setReleaseDate(f.getReleaseDate()));
 
         if (genre != null)
@@ -113,15 +124,20 @@ public class FilmService {
             return films.findAll(Example.of(new Film().setKeywords(keywords), matcher), request)
                     .map(f -> new Film().setId(f.getId()).setTitle(f.getTitle()).setOverview(f.getOverview()).setGenres(f.getGenres()).setReleaseDate(f.getReleaseDate()));
 
-        if (cast != null)
-            return films.findAll(Example.of(new Film().setCast(castList), matcher), request)
+        /*if (cast != null)
+            return films.findAll(Example.of(new Film().setGenres(genres).setKeywords(keywords).setReleaseDate(date), matcher), request)
+                    .filter(film -> film.getCast().stream().anyMatch(castList.contains(cast)))
                     .map(f -> new Film().setId(f.getId()).setTitle(f.getTitle()).setOverview(f.getOverview()).setGenres(f.getGenres()).setReleaseDate(f.getReleaseDate()));
-
+*/
         if (releaseDate != null)
             return films.findAll(Example.of(new Film().setReleaseDate(date), matcher), request)
                     .map(f -> new Film().setId(f.getId()).setTitle(f.getTitle()).setOverview(f.getOverview()).setGenres(f.getGenres()).setReleaseDate(f.getReleaseDate()));
 
-        return films.findAll(request);
+        return films.findAll(request).map(f -> new Film().setId(f.getId()).setTitle(f.getTitle()).setOverview(f.getOverview()).setGenres(f.getGenres()).setReleaseDate(f.getReleaseDate()).setResources(f.getResources()));
+
     }
+
+
+
 }
 

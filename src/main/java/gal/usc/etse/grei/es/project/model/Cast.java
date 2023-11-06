@@ -27,6 +27,11 @@ public class Cast extends Person {
     }
 
     @Override
+    public String getName() {
+        return super.getName();
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
