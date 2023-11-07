@@ -52,11 +52,14 @@ public class FilmService {
 
         List<String> genres = null;
         List<String> keywords = null;
+        List<String> credits = null;
         Date date = null;
 
         if (genre != null) genres = Arrays.asList(genre.split(","));
 
         if (keyword != null) keywords = Arrays.asList(keyword.split(","));
+
+        if (credit != null) credits = Arrays.asList(credit.split(","));
 
         if (releaseDate != null) {
             date = new Date();
@@ -73,12 +76,20 @@ public class FilmService {
         if (keyword != null) query.addCriteria(Criteria.where("keywords").all(keywords));
 
         if (credit != null) {
-            Criteria castCriteria = new Criteria().orOperator(
-                    Criteria.where("cast.name").regex(credit),
-                    Criteria.where("producers.name").regex(credit),
-                    Criteria.where("crew.name").regex(credit)
-            );
-            query.addCriteria(castCriteria);
+            List<Criteria> criteriaList = new ArrayList<>();
+
+            // Para cada elemento en la lista "credits", crea un criterio para buscar en los tres campos
+            for (String cred : credits) {
+                Criteria creditCriteria = new Criteria().orOperator(
+                        Criteria.where("cast.name").in(cred),
+                        Criteria.where("producers.name").in(cred),
+                        Criteria.where("crew.name").in(cred)
+                );
+                criteriaList.add(creditCriteria);
+            }
+
+            // Agrega todos los criterios a un criterio final con el operador "$or"
+            query.addCriteria(new Criteria().andOperator(criteriaList.toArray(new Criteria[0])));
         }
 
         if (releaseDate != null) query.addCriteria(Criteria.where("releaseDate").all(date));
