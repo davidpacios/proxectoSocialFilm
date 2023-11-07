@@ -39,10 +39,10 @@ public class FilmController {
                                                   @RequestParam(value = "sort", defaultValue = "title") String sort,
                                                   @RequestParam(value = "keyword", required = false) String keyword,
                                                   @RequestParam(value = "genre", required = false) String genre,
-                                                  @RequestParam(value = "cast", required = false) String cast,
+                                                  @RequestParam(value = "credit", required = false) String credit,
                                                   @RequestParam(value = "releaseDate", required = false) String releaseDate) {
 
-        return ResponseEntity.ok(filmService.getAllFilms(page, size, sort, keyword, genre, cast, releaseDate));
+        return ResponseEntity.ok(filmService.getAllFilms(page, size, sort, keyword, genre, credit, releaseDate));
     }
 
     @PostMapping
