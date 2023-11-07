@@ -50,7 +50,7 @@ public class UserService {
             if (update.containsKey("path")) { //Si el update contiene el campo path
                 String path = (String) update.get("path"); //Obtenemos el path
                 if (path.equals("/email") || path.equals("/birthday")) //Si el path es email o birthday
-                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"No se puede realizar la modificación.");
+                    throw new ResponseStatusException(HttpStatus.METHOD_NOT_ALLOWED,"No se puede realizar la modificación.");
             }
         }
         User user1 = patchUtils.patch(user, updates);
