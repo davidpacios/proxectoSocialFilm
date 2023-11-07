@@ -17,13 +17,12 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PatchUtils patchUtils;
 
     @Autowired
-    private PatchUtils patchUtils;
-
-    @Autowired
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, PatchUtils patchUtils) {
         this.userRepository = userRepository;
+        this.patchUtils = patchUtils;
     }
 
     public Optional<User> getUserById(String id) {
@@ -41,12 +40,12 @@ public class UserService {
     }
 
     public void deleteUser(String id) {
-        userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid user Id:" + id));
+        userRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "No existe el usuario con el id proporcionado."));
         userRepository.deleteById(id);
     }
 
     public User updateUser(String id, List<Map<String, Object>> updates) throws JsonPatchException {
-        User user = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid user Id:" + id));
+        User user = userRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "No existe el usuario con el id proporcionado."));
         for (Map<String, Object> update : updates) {
             if (update.containsKey("path")) { //Si el update contiene el campo path
                 String path = (String) update.get("path"); //Obtenemos el path

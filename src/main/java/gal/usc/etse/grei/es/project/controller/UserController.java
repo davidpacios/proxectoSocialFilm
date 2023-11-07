@@ -58,37 +58,27 @@ public class UserController {
         return ResponseEntity.ok(updatedUser);
     }
 
-    //TODO PREGUNTAR POR CORREO SI HACE FALTA EN EL CAMPO AMIGO MOSTRAR TODO LO QUE SABEMOS DE ESA PERSONA (TODOS LOS CAMPOS) O SOLO LOS INTRODUCIDOS
     @PostMapping("/{id}/friend")
     public ResponseEntity<User> addFriend(@PathVariable("id") String id, @RequestBody User friend) throws JsonPatchException {
-
-        if (friend.getEmail() == null || friend.getName() == null) {
+        if (friend.getEmail() == null || friend.getName() == null)
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El email y el nombre son campos obligatorios.");
-        }
 
         User user = userService.getUserById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario no encontrado: " + id));
         User amigo = userService.getUserByEmail(friend.getEmail());
-        if (amigo == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Amigo no dado de alta en la base de datos.");
-        }
+        if (amigo == null) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Amigo no dado de alta en la base de datos.");
 
         //comprobar que el nombre e email del amigo coinciden
         if (!amigo.getName().equals(friend.getName()) || !amigo.getEmail().equals(friend.getEmail()))
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El nombre y el email del amigo no coinciden");
 
+        if (user.getFriends() == null) user.setFriends(new ArrayList<>());
 
-        if (user.getFriends() == null) {
-            user.setFriends(new ArrayList<>());
-        }
+        if (amigo.getFriends() == null) amigo.setFriends(new ArrayList<>());
 
-        if (user.getFriends().stream().anyMatch(f -> f.getEmail().equals(friend.getEmail()))) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El amigo ya está en la lista de amigos.");
-        }
+        if (user.getFriends().stream().anyMatch(f -> f.getEmail().equals(friend.getEmail()))) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El amigo ya está en la lista de amigos.");
 
         //mirar si como amigo se está intentando añadir a uno mismo
-        if (user.getEmail().equals(friend.getEmail())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No se puede añadir a uno mismo como amigo.");
-        }
+        if (user.getEmail().equals(friend.getEmail())) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No se puede añadir a uno mismo como amigo.");
 
         friend.setId(amigo.getId());
         user.getFriends().add(friend);
@@ -100,6 +90,19 @@ public class UserController {
         List<Map<String, Object>> updates = Collections.singletonList(updateMap);
         userService.updateUser(id, updates);
 
+        User useraux = new User();
+        useraux.setId(user.getId());
+        useraux.setName(user.getName());
+        useraux.setEmail(user.getEmail());
+        amigo.getFriends().add(useraux);
+        updateMap = new HashMap<>();
+        updateMap.put("op", "add");
+        updateMap.put("path", "/friends");
+        updateMap.put("value", amigo.getFriends());
+
+        updates = Collections.singletonList(updateMap);
+        userService.updateUser(amigo.getId(), updates);
+
         return ResponseEntity.ok(user);
     }
 
@@ -107,12 +110,22 @@ public class UserController {
     @DeleteMapping("/{userId}/friend/{friendId}")
     public ResponseEntity<User> deleteFriend(@PathVariable("userId") String userId, @PathVariable("friendId") String friendId) throws JsonPatchException {
         User user = userService.getUserById(userId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario no encontrado: " + userId));
+        User friend = userService.getUserById(friendId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario no encontrado: " + friendId));
+
+        //Verificar que el user y amigo no son el mismo
+        if (userId.equals(friendId)) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No se puede eliminar a uno mismo como amigo.");
 
         // Verificar si el amigo existe en la lista de amigos
-        boolean friendExists = user.getFriends() != null && user.getFriends().removeIf(friend -> friend.getId().equals(friendId));
+        boolean friendExists = user.getFriends() != null && user.getFriends().removeIf(friends -> friend.getId().equals(friendId));
+        if (!friendExists) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El amigo no se encontró en la lista de amigos.");
 
-        if (!friendExists) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El amigo no se encontró en la lista de amigos.");
+        if (friend.getFriends() != null) {
+            for (User u : friend.getFriends()) {
+                if (u.getId().equals(userId)) {
+                    friend.getFriends().remove(u);
+                    break;
+                }
+            }
         }
 
         // Actualizar la lista de amigos en la base de datos
@@ -123,6 +136,14 @@ public class UserController {
 
         List<Map<String, Object>> updates = Collections.singletonList(updateMap);
         userService.updateUser(userId, updates);
+
+        updateMap = new HashMap<>();
+        updateMap.put("op", "replace");
+        updateMap.put("path", "/friends");
+        updateMap.put("value", friend.getFriends());
+
+        updates = Collections.singletonList(updateMap);
+        userService.updateUser(friendId, updates);
 
         return ResponseEntity.ok(user);
     }

@@ -3,7 +3,6 @@ package gal.usc.etse.grei.es.project.controller;
 import javax.validation.Valid;
 
 import com.github.fge.jsonpatch.JsonPatchException;
-import gal.usc.etse.grei.es.project.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -37,7 +36,7 @@ public class CommentsController {
 
     @PostMapping
     public ResponseEntity<Assessment> addComment(@RequestBody @Valid Assessment comentario) {
-        return new ResponseEntity<Assessment>(commentsService.addComment(comentario), HttpStatus.CREATED);
+        return new ResponseEntity<>(commentsService.addComment(comentario), HttpStatus.CREATED);
     }
 
     @DeleteMapping("{id}")
@@ -57,8 +56,6 @@ public class CommentsController {
         return commentsService.getCommentsByMovieId(movieId);
     }
 
-
-    //TODO EN TODOS LOS PATCH NOS FALTA COMRPOBACION DE QUE EL ID REALMENTE ES VALIDO
     @PatchMapping(
             path = "{id}",
             consumes = MediaType.APPLICATION_JSON_VALUE,

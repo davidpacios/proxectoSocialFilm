@@ -29,7 +29,7 @@ public class FilmController {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     ResponseEntity<Film> get(@PathVariable("id") String id) {
-        return ResponseEntity.of(filmService.get(id));
+        return ResponseEntity.of(filmService.get(id)); //status 200
     }
 
     //get all films

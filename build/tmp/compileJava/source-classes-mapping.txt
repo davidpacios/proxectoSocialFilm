@@ -6,20 +6,20 @@ gal/usc/etse/grei/es/project/model/Crew.java
  gal.usc.etse.grei.es.project.model.Crew
 gal/usc/etse/grei/es/project/model/Resource.java
  gal.usc.etse.grei.es.project.model.Resource
-gal/usc/etse/grei/es/project/controller/CommentsController.java
- gal.usc.etse.grei.es.project.controller.CommentsController
+gal/usc/etse/grei/es/project/service/FilmService.java
+ gal.usc.etse.grei.es.project.service.FilmService
 gal/usc/etse/grei/es/project/model/Collection.java
  gal.usc.etse.grei.es.project.model.Collection
 gal/usc/etse/grei/es/project/repository/CommentsRepository.java
  gal.usc.etse.grei.es.project.repository.CommentsRepository
-gal/usc/etse/grei/es/project/controller/UserController.java
- gal.usc.etse.grei.es.project.controller.UserController
-gal/usc/etse/grei/es/project/service/CommentsService.java
- gal.usc.etse.grei.es.project.service.CommentsService
+gal/usc/etse/grei/es/project/model/Cast.java
+ gal.usc.etse.grei.es.project.model.Cast
+gal/usc/etse/grei/es/project/controller/FilmController.java
+ gal.usc.etse.grei.es.project.controller.FilmController
 gal/usc/etse/grei/es/project/repository/PeopleRepository.java
  gal.usc.etse.grei.es.project.repository.PeopleRepository
-gal/usc/etse/grei/es/project/repository/UserRepository.java
- gal.usc.etse.grei.es.project.repository.UserRepository
+gal/usc/etse/grei/es/project/service/PatchUtils.java
+ gal.usc.etse.grei.es.project.service.PatchUtils
 gal/usc/etse/grei/es/Application.java
  gal.usc.etse.grei.es.Application
 gal/usc/etse/grei/es/project/model/Producer.java
@@ -32,17 +32,17 @@ gal/usc/etse/grei/es/project/model/ResourceType.java
  gal.usc.etse.grei.es.project.model.ResourceType
 gal/usc/etse/grei/es/project/model/User.java
  gal.usc.etse.grei.es.project.model.User
-gal/usc/etse/grei/es/project/service/UserService.java
- gal.usc.etse.grei.es.project.service.UserService
+gal/usc/etse/grei/es/project/repository/UserRepository.java
+ gal.usc.etse.grei.es.project.repository.UserRepository
 gal/usc/etse/grei/es/project/model/Status.java
  gal.usc.etse.grei.es.project.model.Status
 gal/usc/etse/grei/es/project/model/Date.java
  gal.usc.etse.grei.es.project.model.Date
-gal/usc/etse/grei/es/project/service/PatchUtils.java
- gal.usc.etse.grei.es.project.service.PatchUtils
-gal/usc/etse/grei/es/project/model/Cast.java
- gal.usc.etse.grei.es.project.model.Cast
-gal/usc/etse/grei/es/project/service/FilmService.java
- gal.usc.etse.grei.es.project.service.FilmService
-gal/usc/etse/grei/es/project/controller/FilmController.java
- gal.usc.etse.grei.es.project.controller.FilmController
+gal/usc/etse/grei/es/project/service/CommentsService.java
+ gal.usc.etse.grei.es.project.service.CommentsService
+gal/usc/etse/grei/es/project/controller/UserController.java
+ gal.usc.etse.grei.es.project.controller.UserController
+gal/usc/etse/grei/es/project/service/UserService.java
+ gal.usc.etse.grei.es.project.service.UserService
+gal/usc/etse/grei/es/project/controller/CommentsController.java
+ gal.usc.etse.grei.es.project.controller.CommentsController
