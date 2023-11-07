@@ -2,26 +2,34 @@ package gal.usc.etse.grei.es.project.service;
 
 import com.github.fge.jsonpatch.JsonPatchException;
 import gal.usc.etse.grei.es.project.model.*;
+import gal.usc.etse.grei.es.project.model.Date;
 import gal.usc.etse.grei.es.project.repository.FilmRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+
+import static org.springframework.data.domain.Page.empty;
 
 @Service
 public class FilmService {
     private final FilmRepository films;
+    private final MongoTemplate mongoTemplate;
+
     @Autowired
     private PatchUtils patchUtils;
 
 
     @Autowired
-    public FilmService(FilmRepository films) {
+    public FilmService(FilmRepository films, MongoTemplate mongoTemplate){
         this.films = films;
+        this.mongoTemplate = mongoTemplate;
+
     }
 
     public Optional<Film> get(String id) {
@@ -44,9 +52,8 @@ public class FilmService {
     }
 
     public Page<Film> getAllFilms(int page, int size, String sort, String keyword, String genre, String cast, String releaseDate) {
-       Pageable request = PageRequest.of(page, size, Sort.by(sort).ascending());
-        ExampleMatcher matcher = ExampleMatcher.matching().withIgnoreCase().withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING);
-        List<String> castList = null;
+        Pageable request = PageRequest.of(page, size, Sort.by(sort).ascending());
+
         List<String> genres = null;
         List<String> keywords = null;
         Date date = null;
@@ -59,10 +66,6 @@ public class FilmService {
             keywords = Arrays.asList(keyword.split(","));
         }
 
-        if (cast != null) {
-            castList = Arrays.asList(cast.split(","));
-        }
-
 
         if (releaseDate != null) {
             date = new Date();
@@ -72,69 +75,51 @@ public class FilmService {
             date.setYear(Integer.parseInt(parts[2]));
         }
 
-        if (genre != null && keyword != null && cast != null && releaseDate != null)
-            return films.findAll(Example.of(new Film().setGenres(genres).setKeywords(keywords).setReleaseDate(date), matcher), request)
-                    .map(f -> new Film().setId(f.getId()).setTitle(f.getTitle()).setOverview(f.getOverview()).setGenres(f.getGenres()).setReleaseDate(f.getReleaseDate()));
+        Query query = new Query().with(request);
 
-        if (genre != null && keyword != null && cast != null)
-            return films.findAll(Example.of(new Film().setGenres(genres).setKeywords(keywords), matcher), request)
-                    .map(f -> new Film().setId(f.getId()).setTitle(f.getTitle()).setOverview(f.getOverview()).setGenres(f.getGenres()).setReleaseDate(f.getReleaseDate()));
+        if (genre != null) {
+            query.addCriteria(Criteria.where("genres").all(genres));
+        }
 
-        if (genre != null && keyword != null && releaseDate != null)
-            return films.findAll(Example.of(new Film().setGenres(genres).setKeywords(keywords).setReleaseDate(date), matcher), request)
-                    .map(f -> new Film().setId(f.getId()).setTitle(f.getTitle()).setOverview(f.getOverview()).setGenres(f.getGenres()).setReleaseDate(f.getReleaseDate()));
+        if (keyword != null) {
+            query.addCriteria(Criteria.where("keywords").all(keywords));
+        }
 
-        if (genre != null && cast != null && releaseDate != null)
-            return films.findAll(Example.of(new Film().setGenres(genres).setReleaseDate(date), matcher), request)
-                    .map(f -> new Film().setId(f.getId()).setTitle(f.getTitle()).setOverview(f.getOverview()).setGenres(f.getGenres()).setReleaseDate(f.getReleaseDate()));
+        if (cast != null) {
+            Criteria castCriteria = new Criteria().orOperator(
+                    Criteria.where("cast.name").regex(cast),
+                    Criteria.where("producers.name").regex(cast),
+                    Criteria.where("crew.name").regex(cast)
+            );
+            query.addCriteria(castCriteria);
 
-        if (keyword != null && cast != null && releaseDate != null)
-            return films.findAll(Example.of(new Film().setKeywords(keywords).setReleaseDate(date), matcher), request)
-                    .map(f -> new Film().setId(f.getId()).setTitle(f.getTitle()).setOverview(f.getOverview()).setGenres(f.getGenres()).setReleaseDate(f.getReleaseDate()));
+        }
 
-        if (genre != null && keyword != null)
-            return films.findAll(Example.of(new Film().setGenres(genres).setKeywords(keywords), matcher), request)
-                    .map(f -> new Film().setId(f.getId()).setTitle(f.getTitle()).setOverview(f.getOverview()).setGenres(f.getGenres()).setReleaseDate(f.getReleaseDate()));
+        if (releaseDate != null) {
+            query.addCriteria(Criteria.where("releaseDate").all(date));
+        }
 
-        if (genre != null && cast != null)
-            return films.findAll(Example.of(new Film().setGenres(genres), matcher), request)
-                    .map(f -> new Film().setId(f.getId()).setTitle(f.getTitle()).setOverview(f.getOverview()).setGenres(f.getGenres()).setReleaseDate(f.getReleaseDate()));
 
-        if (genre != null && releaseDate != null)
-            return films.findAll(Example.of(new Film().setGenres(genres).setReleaseDate(date), matcher), request)
-                    .map(f -> new Film().setId(f.getId()).setTitle(f.getTitle()).setOverview(f.getOverview()).setGenres(f.getGenres()).setReleaseDate(f.getReleaseDate()));
+        query.fields().exclude("tagline").exclude("producers").exclude("crew").exclude("cast").exclude("producers").exclude("budget").exclude("status");
 
-        if (keyword != null && cast != null)
-            return films.findAll(Example.of(new Film().setKeywords(keywords), matcher), request)
-                    .map(f -> new Film().setId(f.getId()).setTitle(f.getTitle()).setOverview(f.getOverview()).setGenres(f.getGenres()).setReleaseDate(f.getReleaseDate()));
 
-        if (keyword != null && releaseDate != null)
-            return films.findAll(Example.of(new Film().setKeywords(keywords).setReleaseDate(date), matcher), request)
-                    .map(f -> new Film().setId(f.getId()).setTitle(f.getTitle()).setOverview(f.getOverview()).setGenres(f.getGenres()).setReleaseDate(f.getReleaseDate()));
+        List <Film> filmss = mongoTemplate.find(query,Film.class);
+        //https://stackoverflow.com/questions/29030542/pagination-with-mongotemplate
+        /*long count = mongoTemplate.count(query, Film.class);
+        System.out.println(count);
+        Page<Film> result = new PageImpl<Film>(filmss , request, count);
 
-        if (cast != null && releaseDate != null)
-            return films.findAll(Example.of(new Film().setReleaseDate(date), matcher), request)
-                    .map(f -> new Film().setId(f.getId()).setTitle(f.getTitle()).setOverview(f.getOverview()).setGenres(f.getGenres()).setReleaseDate(f.getReleaseDate()));
-
-        if (genre != null)
-            return films.findAll(Example.of(new Film().setGenres(genres), matcher), request)
-                    .map(f -> new Film().setId(f.getId()).setTitle(f.getTitle()).setOverview(f.getOverview()).setGenres(f.getGenres()).setReleaseDate(f.getReleaseDate()));
-
-        if (keyword != null)
-            return films.findAll(Example.of(new Film().setKeywords(keywords), matcher), request)
-                    .map(f -> new Film().setId(f.getId()).setTitle(f.getTitle()).setOverview(f.getOverview()).setGenres(f.getGenres()).setReleaseDate(f.getReleaseDate()));
-
-        /*if (cast != null)
-            return films.findAll(Example.of(new Film().setGenres(genres).setKeywords(keywords).setReleaseDate(date), matcher), request)
-                    .filter(film -> film.getCast().stream().anyMatch(castList.contains(cast)))
-                    .map(f -> new Film().setId(f.getId()).setTitle(f.getTitle()).setOverview(f.getOverview()).setGenres(f.getGenres()).setReleaseDate(f.getReleaseDate()));
 */
-        if (releaseDate != null)
-            return films.findAll(Example.of(new Film().setReleaseDate(date), matcher), request)
-                    .map(f -> new Film().setId(f.getId()).setTitle(f.getTitle()).setOverview(f.getOverview()).setGenres(f.getGenres()).setReleaseDate(f.getReleaseDate()));
 
-        return films.findAll(request).map(f -> new Film().setId(f.getId()).setTitle(f.getTitle()).setOverview(f.getOverview()).setGenres(f.getGenres()).setReleaseDate(f.getReleaseDate()).setResources(f.getResources()));
 
+        return PageableExecutionUtils.getPage(
+                filmss,
+                request,
+                () -> mongoTemplate.count(Query.of(query).limit(-1).skip(-1), Film.class));
+       /* if (result.isEmpty())
+            return empty();
+
+        else return result;*/
     }
 
 
