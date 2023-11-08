@@ -26,19 +26,22 @@ public class User {
     private String picture;
     @NotNull
     private Date birthday;
-    private List<User> friends;
+
+    private String password;
+    private List<String> roles;
 
     public User() {
     }
 
-    public User(String id, String email, String name, String country, String picture, Date birthday, List<User> friends) {
+    public User(String id, String email, String name, String country, String picture, Date birthday, String password, List<String> roles) {
         this.id = id;
         this.email = email;
         this.name = name;
         this.country = country;
         this.picture = picture;
         this.birthday = birthday;
-        this.friends = friends;
+        this.password = password;
+        this.roles = roles;
     }
 
     public String getId() {
@@ -70,10 +73,6 @@ public class User {
         return birthday;
     }
 
-    public List<User> getFriends() {
-        return friends;
-    }
-
     public User setEmail(String email) {
         this.email = email;
         return this;
@@ -99,8 +98,22 @@ public class User {
         return this;
     }
 
-    public User setFriends(List<User> friends) {
-        this.friends = friends;
+
+    public String getPassword() {
+        return password;
+    }
+
+    public User setPassword(String password) {
+        this.password = password;
+        return this;
+    }
+
+    public List<String> getRoles() {
+        return roles;
+    }
+
+    public User setRoles(List<String> roles) {
+        this.roles = roles;
         return this;
     }
 
@@ -109,12 +122,12 @@ public class User {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return Objects.equals(email, user.email) && Objects.equals(name, user.name) && Objects.equals(country, user.country) && Objects.equals(picture, user.picture) && Objects.equals(birthday, user.birthday) && Objects.equals(friends, user.friends);
+        return Objects.equals(email, user.email) && Objects.equals(name, user.name) && Objects.equals(country, user.country) && Objects.equals(picture, user.picture) && Objects.equals(birthday, user.birthday);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(email, name, country, picture, birthday, friends);
+        return Objects.hash(email, name, country, picture, birthday);
     }
 
     @Override
@@ -125,7 +138,6 @@ public class User {
                 .add("country='" + country + "'")
                 .add("picture='" + picture + "'")
                 .add("birthday=" + birthday)
-                .add("friends=" + friends)
                 .toString();
     }
 }
