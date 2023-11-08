@@ -47,8 +47,7 @@ public class UserService {
     }
 
     public User addUser(User user) {
-        User u = getUserByEmail(user.getEmail());
-        if(u == null)  throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"El usuario ya existe con el correo electrónico proporcionado.");
+        if(userRepository.findByEmail(user.getEmail()) != null) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El usuario ya existe con el correo electrónico proporcionado" + user.getEmail());
         // Modificamos o contrasinal para gardalo codificado na base de datos
         user.setPassword(encoder.encode(user.getPassword()));
         return userRepository.save(user);

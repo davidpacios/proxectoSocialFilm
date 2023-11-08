@@ -30,8 +30,8 @@ gal/usc/etse/grei/es/project/model/Collection.java
  gal.usc.etse.grei.es.project.model.Collection
 gal/usc/etse/grei/es/project/repository/CommentsRepository.java
  gal.usc.etse.grei.es.project.repository.CommentsRepository
-gal/usc/etse/grei/es/project/controller/UserController.java
- gal.usc.etse.grei.es.project.controller.UserController
+gal/usc/etse/grei/es/project/service/PatchUtils.java
+ gal.usc.etse.grei.es.project.service.PatchUtils
 gal/usc/etse/grei/es/project/service/CommentsService.java
  gal.usc.etse.grei.es.project.service.CommentsService
 gal/usc/etse/grei/es/project/repository/FriendsRepository.java
@@ -44,8 +44,8 @@ gal/usc/etse/grei/es/project/repository/FilmRepository.java
  gal.usc.etse.grei.es.project.repository.FilmRepository
 gal/usc/etse/grei/es/project/model/Person.java
  gal.usc.etse.grei.es.project.model.Person
-gal/usc/etse/grei/es/project/service/UserService.java
- gal.usc.etse.grei.es.project.service.UserService
+gal/usc/etse/grei/es/project/repository/UserRepository.java
+ gal.usc.etse.grei.es.project.repository.UserRepository
 gal/usc/etse/grei/es/project/model/Status.java
  gal.usc.etse.grei.es.project.model.Status
 gal/usc/etse/grei/es/project/filter/AuthenticationFilter.java
@@ -54,7 +54,7 @@ gal/usc/etse/grei/es/project/model/Date.java
  gal.usc.etse.grei.es.project.model.Date
 gal/usc/etse/grei/es/project/model/Cast.java
  gal.usc.etse.grei.es.project.model.Cast
-gal/usc/etse/grei/es/project/repository/UserRepository.java
- gal.usc.etse.grei.es.project.repository.UserRepository
-gal/usc/etse/grei/es/project/service/PatchUtils.java
- gal.usc.etse.grei.es.project.service.PatchUtils
+gal/usc/etse/grei/es/project/service/UserService.java
+ gal.usc.etse.grei.es.project.service.UserService
+gal/usc/etse/grei/es/project/controller/UserController.java
+ gal.usc.etse.grei.es.project.controller.UserController

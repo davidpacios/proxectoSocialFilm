@@ -28,7 +28,7 @@ public class UserController {
     }
 
     @GetMapping(path = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasRole('ADMIN') or #id == principal or @userService.areFriends(#email, principal)")
+    @PreAuthorize("hasRole('ROLE_USER')")
     ResponseEntity<User> get(@PathVariable("id") String id) {
         return ResponseEntity.of(userService.getUserById(id));
     }
@@ -46,6 +46,7 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<User> addUser(@RequestBody @Valid User user) {
+        user.setRoles(Collections.singletonList("ROLE_USER"));
         return new ResponseEntity<>(userService.addUser(user), HttpStatus.CREATED);
     }
 

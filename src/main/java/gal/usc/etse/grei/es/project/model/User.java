@@ -26,7 +26,7 @@ public class User {
     private String picture;
     @NotNull
     private Date birthday;
-
+    @NotNull @NotBlank
     private String password;
     private List<String> roles;
 

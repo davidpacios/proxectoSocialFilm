@@ -23,7 +23,10 @@ public class AuthenticationService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         // Buscamos o usuario correspondente ao id proporcionado na base de datos,
         // e lanzamos a excepción no caso de que non exista
-        User user = users.findById(username).orElseThrow(() -> new UsernameNotFoundException(username));
+        User user = users.findByEmail(username);
+        if (user == null) {
+            throw new UsernameNotFoundException("Usuario non encontrado " + username);
+        }
 
         // Creamos o usuario de spring empregando o builder
         return org.springframework.security.core.userdetails.User.builder()
