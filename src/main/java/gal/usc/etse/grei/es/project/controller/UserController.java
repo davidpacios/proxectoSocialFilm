@@ -27,14 +27,16 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping(path = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasRole('ROLE_USER')")
-    ResponseEntity<User> get(@PathVariable("id") String id) {
-        return ResponseEntity.of(userService.getUserById(id));
-    }
+        //TODO Falta amigos
+        @GetMapping(path = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+        @PreAuthorize("hasRole('ROLE_ADMIN') or #id==principal")
+        ResponseEntity<User> get(@PathVariable("id") String id) {
+            return ResponseEntity.of(userService.getUserById(id));
+        }
 
     //Get all users
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Page<User>> getAllUsers(@RequestParam(value = "page", defaultValue = "0") int page,
                                                   @RequestParam(value = "size", defaultValue = "10") int size,
                                                   @RequestParam(value = "sort", defaultValue = "id") String sort,
@@ -51,18 +53,21 @@ public class UserController {
     }
 
     @DeleteMapping("{id}")
+    @PreAuthorize("#id==principal")
     public ResponseEntity<Void> deleteUser(@PathVariable("id") String id) {
         userService.deleteUser(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PatchMapping(path = "{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("#id==principal")
     public ResponseEntity<User> patchUser(@PathVariable("id") String id, @RequestBody List<Map<String, Object>> updates) throws JsonPatchException {
         User updatedUser = userService.updateUser(id, updates);
         return ResponseEntity.ok(updatedUser);
     }
 
     @PostMapping("/{id}/friend")
+    @PreAuthorize("#id==principal")
     public ResponseEntity<Friendship> addFriend(@PathVariable("id") String id, @RequestBody User friend) throws JsonPatchException {
         if (friend.getEmail() == null || friend.getName() == null)
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El email y el nombre son campos obligatorios.");
@@ -84,6 +89,7 @@ public class UserController {
 
 
     @DeleteMapping("/{userId}/friend/{friendId}")
+    @PreAuthorize("#userId==principal")
     public ResponseEntity<Void> deleteFriend(@PathVariable("userId") String userId, @PathVariable("friendId") String friendId) throws JsonPatchException {
         User user = userService.getUserById(userId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario no encontrado: " + userId));
         User friend = userService.getUserById(friendId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario no encontrado: " + friendId));
@@ -91,7 +97,7 @@ public class UserController {
         userService.deleteUserFriendship(user, friend);
 
         return new ResponseEntity<>(HttpStatus.OK);
-    }
+    }w
 
 
 }

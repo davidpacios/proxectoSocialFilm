@@ -30,8 +30,10 @@ public class AuthenticationService implements UserDetailsService {
 
         // Creamos o usuario de spring empregando o builder
         return org.springframework.security.core.userdetails.User.builder()
+                //id
+                .username(user.getId())
                 // Establecemos o nome do usuario
-                .username(user.getEmail())
+                //.username(user.getEmail())
                 // Establecemos o contrasinal do usuario
                 .password(user.getPassword())
                 // Establecemos a lista de roles que ten o usuario.

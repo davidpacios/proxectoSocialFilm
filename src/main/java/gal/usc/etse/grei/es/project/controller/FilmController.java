@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -28,12 +29,14 @@ public class FilmController {
             path = "{id}",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
+    @PreAuthorize("isAuthenticated()")
     ResponseEntity<Film> get(@PathVariable("id") String id) {
         return ResponseEntity.of(filmService.get(id)); //status 200
     }
 
     //get all films
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Page<Film>> getAllFilms(@RequestParam(value = "page", defaultValue = "0") int page,
                                                   @RequestParam(value = "size", defaultValue = "10") int size,
                                                   @RequestParam(value = "sort", defaultValue = "title") String sort,
@@ -46,11 +49,13 @@ public class FilmController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Film> addFilm(@RequestBody @Valid Film film) {
         return new ResponseEntity<>(filmService.addFilm(film), HttpStatus.CREATED);
     }
 
     @DeleteMapping("{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Void> deleteFilm(@PathVariable("id") String id) {
         filmService.deleteFilm(id);
         return new ResponseEntity<>(HttpStatus.OK);
@@ -61,6 +66,7 @@ public class FilmController {
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Film> patchFilm(@PathVariable("id") String id, @RequestBody List<Map<String, Object>> updates) throws JsonPatchException {
         Film updatedFilm = filmService.updateFilm(id, updates);
         return ResponseEntity.ok(updatedFilm);
