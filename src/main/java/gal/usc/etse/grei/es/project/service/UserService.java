@@ -114,8 +114,11 @@ public class UserService {
 
     }
 
-    public Boolean areFriends(String ... users) {
-        return Arrays.stream(users).allMatch(it -> it.contains("@test.com"));
+    public Boolean areFriends(String userId, String principal) {
+        System.out.println("userId: " + userId + " principal: " + principal);
+        Friendship friendship = friendsRepository.findByUserAndFriend(userId, principal);
+        if(friendship == null) return false;
+        return friendship.getConfirmed();
     }
 
 }

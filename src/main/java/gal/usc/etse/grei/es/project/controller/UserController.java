@@ -27,12 +27,11 @@ public class UserController {
         this.userService = userService;
     }
 
-        //TODO Falta amigos
-        @GetMapping(path = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-        @PreAuthorize("hasRole('ROLE_ADMIN') or #id==principal")
-        ResponseEntity<User> get(@PathVariable("id") String id) {
-            return ResponseEntity.of(userService.getUserById(id));
-        }
+    @GetMapping(path = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasRole('ROLE_ADMIN') or #id==principal or (@userService.areFriends( principal,#id))")
+    ResponseEntity<User> get(@PathVariable("id") String id) {
+        return ResponseEntity.of(userService.getUserById(id));
+    }
 
     //Get all users
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
@@ -97,7 +96,7 @@ public class UserController {
         userService.deleteUserFriendship(user, friend);
 
         return new ResponseEntity<>(HttpStatus.OK);
-    }w
+    }
 
 
 }

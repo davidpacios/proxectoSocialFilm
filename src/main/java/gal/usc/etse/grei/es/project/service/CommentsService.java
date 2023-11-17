@@ -96,4 +96,10 @@ public class CommentsService {
         comment = patchUtils.patch(comment, updates);
         return commentsRepository.save(comment);
     }
+
+    public boolean isCommentFromUser(String id, String userId) {
+        Optional<Assessment> comment = commentsRepository.findById(id);
+        if (!comment.isPresent()) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Comentario no encontrado");
+        return comment.get().getUser().getId().equals(userId);
+    }
 }
