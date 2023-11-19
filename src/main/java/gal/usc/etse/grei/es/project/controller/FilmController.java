@@ -5,24 +5,33 @@ import gal.usc.etse.grei.es.project.model.Film;
 import gal.usc.etse.grei.es.project.service.FilmService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.hateoas.IanaLinkRelations;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.server.LinkRelationProvider;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("movies")
 public class FilmController {
     private final FilmService filmService;
+    private final LinkRelationProvider relationProvider;
 
     @Autowired
-    public FilmController(FilmService films) {
+    public FilmController(FilmService films, LinkRelationProvider relationProvider) {
         this.filmService = films;
+        this.relationProvider = relationProvider;
     }
 
     @GetMapping(
@@ -31,7 +40,19 @@ public class FilmController {
     )
     @PreAuthorize("isAuthenticated()")
     ResponseEntity<Film> get(@PathVariable("id") String id) {
-        return ResponseEntity.of(filmService.get(id)); //status 200
+        //hateoas
+        Optional<Film> result = filmService.get(id);
+        if(result.isPresent()) {
+            Link self = linkTo(methodOn(FilmController.class).get(id)).withSelfRel();
+            //Link all al recurso /movies
+            Link all = linkTo(FilmController.class).withRel(relationProvider.getCollectionResourceRelFor(Film.class));
+
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.LINK, self.toString())
+                    .header(HttpHeaders.LINK, all.toString())
+                    .body(result.get());
+        }
+        return ResponseEntity.notFound().build();
     }
 
     //get all films
@@ -45,20 +66,74 @@ public class FilmController {
                                                   @RequestParam(value = "credit", required = false) String credit,
                                                   @RequestParam(value = "releaseDate", required = false) String releaseDate) {
 
-        return ResponseEntity.ok(filmService.getAllFilms(page, size, sort, keyword, genre, credit, releaseDate));
+        //hateoas
+        Optional<Page<Film>> result = Optional.ofNullable(filmService.getAllFilms(page, size, sort, keyword, genre, credit, releaseDate));
+
+        if(result.isPresent()) {
+            Page<Film> data = result.get();
+            Pageable metadata = data.getPageable();
+
+            Link self = linkTo(
+                    methodOn(FilmController.class).getAllFilms(metadata.getPageNumber(), size, sort, keyword, genre, credit, releaseDate)
+            ).withSelfRel();
+            Link first = linkTo(
+                    methodOn(FilmController.class).getAllFilms(0, size, sort, keyword, genre, credit, releaseDate)
+            ).withRel(IanaLinkRelations.FIRST);
+            Link last = linkTo(
+                    methodOn(FilmController.class).getAllFilms(data.getTotalPages() - 1, size, sort, keyword, genre, credit, releaseDate)
+            ).withRel(IanaLinkRelations.LAST);
+            Link next = linkTo(
+                    methodOn(FilmController.class).getAllFilms(metadata.next().getPageNumber(), size, sort, keyword, genre, credit, releaseDate)
+            ).withRel(IanaLinkRelations.NEXT);
+            Link previous = linkTo(
+                    methodOn(FilmController.class).getAllFilms(metadata.previousOrFirst().getPageNumber(), size, sort, keyword, genre, credit, releaseDate)
+            ).withRel(IanaLinkRelations.PREVIOUS);
+
+            Link one = linkTo(
+                    methodOn(FilmController.class).get(null)
+            ).withRel(relationProvider.getItemResourceRelFor(Film.class));
+
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.LINK, self.toString())
+                    .header(HttpHeaders.LINK, first.toString())
+                    .header(HttpHeaders.LINK, last.toString())
+                    .header(HttpHeaders.LINK, next.toString())
+                    .header(HttpHeaders.LINK, previous.toString())
+                    .header(HttpHeaders.LINK, one.toString())
+                    .body(result.get());
+        }
+        return ResponseEntity.notFound().build();
     }
 
     @PostMapping
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Film> addFilm(@RequestBody @Valid Film film) {
-        return new ResponseEntity<>(filmService.addFilm(film), HttpStatus.CREATED);
+        //hateoas
+        Optional<Film> result = Optional.ofNullable(filmService.addFilm(film));
+        //link a la pelicula creada y a la lista de peliculas
+        if(result.isPresent()) {
+            Link self = linkTo(methodOn(FilmController.class).get(result.get().getId())).withSelfRel();
+            Link all = linkTo(FilmController.class).withRel(relationProvider.getCollectionResourceRelFor(Film.class));
+
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .header(HttpHeaders.LINK, self.toString())
+                    .header(HttpHeaders.LINK, all.toString())
+                    .body(result.get());
+        }
+        return ResponseEntity.notFound().build();
+
     }
 
     @DeleteMapping("{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Void> deleteFilm(@PathVariable("id") String id) {
+        //hateoas
         filmService.deleteFilm(id);
-        return new ResponseEntity<>(HttpStatus.OK);
+        Link all = linkTo(FilmController.class).withRel(relationProvider.getCollectionResourceRelFor(Film.class));
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .header(HttpHeaders.LINK, all.toString())
+                .build();
     }
 
     @PatchMapping(
@@ -68,7 +143,18 @@ public class FilmController {
     )
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Film> patchFilm(@PathVariable("id") String id, @RequestBody List<Map<String, Object>> updates) throws JsonPatchException {
-        Film updatedFilm = filmService.updateFilm(id, updates);
-        return ResponseEntity.ok(updatedFilm);
+        //hateoas
+        Optional<Film> result = Optional.ofNullable(filmService.updateFilm(id, updates));
+        //link a la pelicula creada y a la lista de peliculas
+        if(result.isPresent()) {
+            Link self = linkTo(methodOn(FilmController.class).get(result.get().getId())).withSelfRel();
+            Link all = linkTo(FilmController.class).withRel(relationProvider.getCollectionResourceRelFor(Film.class));
+
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.LINK, self.toString())
+                    .header(HttpHeaders.LINK, all.toString())
+                    .body(result.get());
+        }
+        return ResponseEntity.notFound().build();
     }
 }

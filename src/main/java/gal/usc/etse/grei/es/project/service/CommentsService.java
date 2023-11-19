@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import com.github.fge.jsonpatch.JsonPatchException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -70,22 +71,30 @@ public class CommentsService {
     }
 
 
-    public List<Assessment> getCommentsByUserId(String userId) {
+    public Page<Assessment> getCommentsByUserId(String userId, int page, int size, String sort) {
+        Pageable request = PageRequest.of(page, size, Sort.by(sort).ascending());
+        ExampleMatcher matcher = ExampleMatcher.matching().withIgnoreCase().withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING);
+
         Optional<User> userOptional = userRepository.findById(userId);
         if (!userOptional.isPresent()) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Usuario no encontrado");
 
-        List<Assessment> comments = commentsRepository.findByUserId(userId);
+        //List<Assessment> comments = commentsRepository.findByUserId(userId);
+        Page<Assessment> comments = commentsRepository.findAll(Example.of(new Assessment().setUser(userOptional.get()), matcher), request);
         if (comments.isEmpty()) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No se encontraron comentarios para el usuario con ID " + userId);
 
         return comments;
     }
 
-    public List<Assessment> getCommentsByMovieId(String movieId) {
+    public Page<Assessment> getCommentsByMovieId(String movieId, int page, int size, String sort) {
+        Pageable request = PageRequest.of(page, size, Sort.by(sort).ascending());
+        ExampleMatcher matcher = ExampleMatcher.matching().withIgnoreCase().withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING);
+
         Optional<Film> filmOptional = filmRepository.findById(movieId);
         if (!filmOptional.isPresent()) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Pelicula no encontrada");
 
         // Obtener los comentarios de la pelicula por su ID
-        List<Assessment> comments = commentsRepository.findByMovieId(movieId);
+        //List<Assessment> comments = commentsRepository.findByMovieId(movieId);
+        Page<Assessment> comments = commentsRepository.findAll(Example.of(new Assessment().setMovie(filmOptional.get()), matcher), request);
         if (comments.isEmpty()) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No se encontraron comentarios para la pelicula con ID " + movieId);
 
         return comments;
