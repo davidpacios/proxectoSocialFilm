@@ -112,10 +112,8 @@ public class CommentsController {
     public List<Assessment> getCommentsByMovieId(@PathVariable String movieId) {
         return commentsService.getCommentsByMovieId(movieId);
     }*/
-    //TODO: HATEOAS HAY que paginar los comentarios
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("(!#movieId.equals('') and isAuthenticated()) or " +
-            "(!#userId.equals('') and (hasRole('ADMIN') or #userId == principal or @userService.areFriends(#userId,principal)))")
+    @PreAuthorize("((#movieId != null) and isAuthenticated()) or ((#userId != null) and (hasRole('ADMIN') or #userId == principal or @userService.areFriends(#userId,principal)))")
     public ResponseEntity<Page<Assessment>> getCommentsByUserIdORMovieId(
                                                          @RequestParam(value = "userId", required = false) String userId,
                                                          @RequestParam(value = "movieId", required = false) String movieId,

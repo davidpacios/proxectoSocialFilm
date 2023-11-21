@@ -77,9 +77,10 @@ public class CommentsService {
 
         Optional<User> userOptional = userRepository.findById(userId);
         if (!userOptional.isPresent()) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Usuario no encontrado");
+        User user = new User().setId(userId).setEmail(userOptional.get().getEmail()).setName(userOptional.get().getName());
 
         //List<Assessment> comments = commentsRepository.findByUserId(userId);
-        Page<Assessment> comments = commentsRepository.findAll(Example.of(new Assessment().setUser(userOptional.get()), matcher), request);
+        Page<Assessment> comments = commentsRepository.findAll(Example.of(new Assessment().setUser(user), matcher), request);
         if (comments.isEmpty()) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No se encontraron comentarios para el usuario con ID " + userId);
 
         return comments;
@@ -91,10 +92,11 @@ public class CommentsService {
 
         Optional<Film> filmOptional = filmRepository.findById(movieId);
         if (!filmOptional.isPresent()) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Pelicula no encontrada");
+        Film film = new Film().setId(movieId).setTitle(filmOptional.get().getTitle());
 
         // Obtener los comentarios de la pelicula por su ID
         //List<Assessment> comments = commentsRepository.findByMovieId(movieId);
-        Page<Assessment> comments = commentsRepository.findAll(Example.of(new Assessment().setMovie(filmOptional.get()), matcher), request);
+        Page<Assessment> comments = commentsRepository.findAll(Example.of(new Assessment().setMovie(film), matcher), request);
         if (comments.isEmpty()) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No se encontraron comentarios para la pelicula con ID " + movieId);
 
         return comments;
