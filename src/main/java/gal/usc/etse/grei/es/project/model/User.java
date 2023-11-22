@@ -1,6 +1,7 @@
 package gal.usc.etse.grei.es.project.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Immutable;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -15,16 +16,25 @@ import java.util.StringJoiner;
 
 @Document(collection = "users")
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@Schema(
+        name = "User",
+        description = "Representation of a user"
+)
 public class User {
     @Id
     private String id;
     @NotBlank @Email
+    @Schema (required = true, example = "test@gmail.com")
     private String email;
     @NotNull @NotBlank
+    @Schema (required = true, example = "Test Test")
     private String name;
+    @Schema (example = "Spain")
     private String country;
+    @Schema (example = "https://placekitten.com/200/287")
     private String picture;
     @NotNull
+    @Schema (required = true)
     private Date birthday;
     @NotNull @NotBlank
     private String password;

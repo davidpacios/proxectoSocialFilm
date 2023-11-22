@@ -3,7 +3,13 @@ package gal.usc.etse.grei.es.project.controller;
 import javax.validation.Valid;
 
 import com.github.fge.jsonpatch.JsonPatchException;
+import gal.usc.etse.grei.es.project.model.User;
 import gal.usc.etse.grei.es.project.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -45,6 +51,37 @@ public class CommentsController {
 
     @GetMapping(path = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("isAuthenticated()")
+    @Operation(
+            operationId = "getOneComment",
+            summary = "Get a single comment details",
+            description = "Get the details for a given comment. To see the user details " +
+                    "you must be authenticated."
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "The comment details",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = Assessment.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Comment not found",
+                    content = @Content
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Not enough privileges",
+                    content = @Content
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "Bad token",
+                    content = @Content
+            ),
+    })
     ResponseEntity<Assessment> get(@PathVariable("id") String id) {
 
         Optional<Assessment> result = commentsService.get(id);
@@ -63,6 +100,37 @@ public class CommentsController {
 
     @PostMapping
     @PreAuthorize("isAuthenticated()")
+    @Operation(
+            operationId = "postOneComment",
+            summary = "Post a single comment details",
+            description = "Post de details. To see the user details " +
+                    "you must be the requested user, his friend, or have admin permissions."
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "The user details",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = User.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "User not found",
+                    content = @Content
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Not enough privileges",
+                    content = @Content
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "Bad token",
+                    content = @Content
+            ),
+    })
     public ResponseEntity<Assessment> addComment(@RequestBody @Valid Assessment comentario) {
         //hateoas
         Optional<Assessment> result = Optional.ofNullable(commentsService.addComment(comentario));

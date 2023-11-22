@@ -1,6 +1,7 @@
 package gal.usc.etse.grei.es.project.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -12,9 +13,13 @@ import java.util.StringJoiner;
 public class Person {
     @Id
     private String id;
+    @Schema(example = "Marlon Brando")
     private String name;
+    @Schema(example = "United States of America")
     private String country;
+    @Schema(example = "https://image.tmdb.org/t/p/original/bxxAaF57GKHTpu2MK7U5bt1mNi5.jpg")
     private String picture;
+    @Schema (example = "Marlon Brando, Jr. (April 3, 1924 – July 1, 2004) was an American actor whose career spanned...")
     private String biography;
     private Date birthday;
     private Date deathday;

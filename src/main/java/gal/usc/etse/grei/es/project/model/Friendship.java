@@ -1,6 +1,7 @@
 package gal.usc.etse.grei.es.project.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -12,8 +13,11 @@ import java.util.StringJoiner;
 public class Friendship {
     @Id
     private String id;
+    @Schema(example = "12345789")
     private String user;
+    @Schema(example = "987654321")
     private String friend;
+    @Schema(example = "true")
     private Boolean confirmed;
     private Date since;
 

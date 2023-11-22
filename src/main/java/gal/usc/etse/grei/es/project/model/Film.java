@@ -1,6 +1,7 @@
 package gal.usc.etse.grei.es.project.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -17,20 +18,28 @@ public class Film {
     @Id
     private String id;
     @NotNull @NotBlank
+    @Schema(required = true, example = "The Godfather")
     private String title;
+    @Schema(example = "The story spans the years from 1945 to 1955 and chronicles the fictional Italian-American Corleone crime family.")
     private String overview;
+    @Schema(example = "An offer you can't refuse.")
     private String tagline;
     private Collection collection;
+    @Schema(example = "[\"Crimen\", \"Comedia\"]")
     private List<String> genres;
     private Date releaseDate;
+    @Schema(example = "[\"christian film\", \"otro\"]")
     private List<String> keywords;
     private List<Producer> producers;
     private List<Crew> crew;
     private List<Cast> cast;
     private List<Resource> resources;
+    @Schema(example = "1000")
     private Long budget;
     private Status status;
+    @Schema(example = "120")
     private Integer runtime;
+    @Schema(example = "1000000")
     private Long revenue;
 
     public Film() {

@@ -4,6 +4,13 @@ import com.github.fge.jsonpatch.JsonPatchException;
 import gal.usc.etse.grei.es.project.model.Friendship;
 import gal.usc.etse.grei.es.project.model.User;
 import gal.usc.etse.grei.es.project.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,6 +33,8 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @RequestMapping("users")
+@Tag(name = "User API", description = "User related operations")
+@SecurityRequirement(name = "JWT")
 public class UserController {
 
     private final UserService userService;
@@ -40,6 +49,37 @@ public class UserController {
 
     @GetMapping(path = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('ROLE_ADMIN') or #id==principal or (@userService.areFriends( principal,#id))")
+    @Operation(
+            operationId = "getOneUser",
+            summary = "Get a single user details",
+            description = "Get the details for a given user. To see the user details " +
+                    "you must be the requested user, his friend, or have admin permissions."
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "The user details",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = User.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "User not found",
+                    content = @Content
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Not enough privileges",
+                    content = @Content
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "Bad token",
+                    content = @Content
+            ),
+    })
     ResponseEntity<User> get(@PathVariable("id") String id) {
 
         Optional<User> result = userService.getUserById(id);
@@ -57,6 +97,32 @@ public class UserController {
     }
 
     //Get all users
+    @Operation(
+            operationId = "getAllUser",
+            summary = "Get all users details",
+            description = "Get the details for all users. To see the user details " +
+                    "you must be authenticated."
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "All users details",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = User.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Not enough privileges",
+                    content = @Content
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "Bad token",
+                    content = @Content
+            ),
+    })
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Page<User>> getAllUsers(@RequestParam(value = "page", defaultValue = "0") int page,
@@ -105,6 +171,31 @@ public class UserController {
     }
 
     @PostMapping
+    @Operation(
+            operationId = "postOneUser",
+            summary = "Post a single user details",
+            description = "Post the details for a user."
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "The user details",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = User.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Validation failed for argument[i]",
+                    content = @Content
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "Bad token",
+                    content = @Content
+            ),
+    })
     public ResponseEntity<User> addUser(@RequestBody @Valid User user) {
         user.setRoles(Collections.singletonList("ROLE_USER"));
         //hateoas
@@ -124,6 +215,32 @@ public class UserController {
 
     @DeleteMapping("{id}")
     @PreAuthorize("#id==principal")
+    @Operation(
+            operationId = "deleteOneUser",
+            summary = "Delete a single user details",
+            description = "Delete the details for a user."  +
+                    "you must be the requested user"
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Deleted user details",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = User.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Not found",
+                    content = @Content
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "Bad token",
+                    content = @Content
+            ),
+    })
     public ResponseEntity<Void> deleteUser(@PathVariable("id") String id) {
         userService.deleteUser(id);
         Link all = linkTo(UserController.class).withRel(relationProvider.getCollectionResourceRelFor(User.class));
@@ -135,6 +252,32 @@ public class UserController {
 
     @PatchMapping(path = "{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("#id==principal")
+    @Operation(
+            operationId = "modifyOneUserDetails",
+            summary = "Modify a single user details",
+            description = "Modify the details for a user."  +
+                    "you must be the requested user"
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Modified user details",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = User.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Not found",
+                    content = @Content
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "Bad token",
+                    content = @Content
+            ),
+    })
     public ResponseEntity<User> patchUser(@PathVariable("id") String id, @RequestBody List<Map<String, Object>> updates) throws JsonPatchException {
         //hateoas
         Optional<User> result = Optional.ofNullable(userService.updateUser(id, updates));

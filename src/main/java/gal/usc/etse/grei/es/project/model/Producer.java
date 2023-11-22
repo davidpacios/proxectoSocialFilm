@@ -1,14 +1,18 @@
 package gal.usc.etse.grei.es.project.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.Objects;
 import java.util.StringJoiner;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Producer {
+    @Schema (example = "Marvel Studios")
     private String name;
+    @Schema(example = "https://image.tmdb.org/t/p/original/3bhkrj58Vtu7enYsRolD1fZdja1.jpg")
     private String logo;
+    @Schema (example = "Spain")
     private String country;
 
     public Producer() {

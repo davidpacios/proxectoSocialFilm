@@ -42,7 +42,16 @@ public class AuthorizationFilter extends BasicAuthenticationFilter {
             }
 
             // No caso de que o token sexa un JWT, comprobamos que sexa valido
-            UsernamePasswordAuthenticationToken authentication = getAuthentication(header);
+
+            UsernamePasswordAuthenticationToken authentication= null;
+            try {
+                 authentication= getAuthentication(header);
+            }catch(Exception e){
+                response.sendError(401, "No autorizado");
+                return;
+            }
+
+
 
             // Se o token era válido, establecemolo no contexto de seguridade de Spring para poder empregalo
             // nos nosos servizos

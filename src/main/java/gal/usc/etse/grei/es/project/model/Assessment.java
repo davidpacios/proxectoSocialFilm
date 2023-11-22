@@ -1,6 +1,7 @@
 package gal.usc.etse.grei.es.project.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import javax.validation.constraints.NotBlank;
@@ -15,12 +16,16 @@ public class Assessment {
     @Id
     private String id;
     @NotNull
+    @Schema(required = true, example = "5")
     private Integer rating;
     @NotNull
+    @Schema(required = true)
     private User user;
     @NotNull
+    @Schema(required = true)
     private Film movie;
     @NotBlank @NotNull
+    @Schema(required = true, example = "This is a comment")
     private String comment;
 
     public Assessment() {
