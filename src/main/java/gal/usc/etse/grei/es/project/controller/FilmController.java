@@ -2,7 +2,13 @@ package gal.usc.etse.grei.es.project.controller;
 
 import com.github.fge.jsonpatch.JsonPatchException;
 import gal.usc.etse.grei.es.project.model.Film;
+import gal.usc.etse.grei.es.project.model.User;
 import gal.usc.etse.grei.es.project.service.FilmService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -39,6 +45,37 @@ public class FilmController {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     @PreAuthorize("isAuthenticated()")
+    @Operation(
+            operationId = "getOneFilm",
+            summary = "Get a single film",
+            description = "Get the details of a single film. " +
+                    "Requires authentication."
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Film details",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = Film.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Film not found",
+                    content = @Content
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Not enough privileges",
+                    content = @Content
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "Bad token",
+                    content = @Content
+            ),
+    })
     ResponseEntity<Film> get(@PathVariable("id") String id) {
         //hateoas
         Optional<Film> result = filmService.get(id);
@@ -58,6 +95,32 @@ public class FilmController {
     //get all films
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("isAuthenticated()")
+    @Operation(
+            operationId = "getAllFilms",
+            summary = "Get all films",
+            description = "Get the details of all films. " +
+                    "Requires authentication."
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "The films details",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = Film.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Not enough privileges",
+                    content = @Content
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "Bad token",
+                    content = @Content
+            ),
+    })
     public ResponseEntity<Page<Film>> getAllFilms(@RequestParam(value = "page", defaultValue = "0") int page,
                                                   @RequestParam(value = "size", defaultValue = "10") int size,
                                                   @RequestParam(value = "sort", defaultValue = "title") String sort,
@@ -107,6 +170,32 @@ public class FilmController {
 
     @PostMapping
     @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @Operation(
+            operationId = "addFilm",
+            summary = "Add a new film",
+            description = "Add a new film to the database. " +
+                    "Requires authentication and admin privileges."
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "The film details",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = Film.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Not enough privileges",
+                    content = @Content
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "Bad token",
+                    content = @Content
+            ),
+    })
     public ResponseEntity<Film> addFilm(@RequestBody @Valid Film film) {
         //hateoas
         Optional<Film> result = Optional.ofNullable(filmService.addFilm(film));
@@ -126,6 +215,33 @@ public class FilmController {
 
     @DeleteMapping("{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @Operation(
+            operationId = "removeFilm",
+            summary = "Remove a film",
+            description = "Remove a film from the database. " +
+                    "Requires authentication and admin privileges."
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "The film was removed"
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Film not found",
+                    content = @Content
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Not enough privileges",
+                    content = @Content
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "Bad token",
+                    content = @Content
+            ),
+    })
     public ResponseEntity<Void> deleteFilm(@PathVariable("id") String id) {
         //hateoas
         filmService.deleteFilm(id);
@@ -142,6 +258,37 @@ public class FilmController {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @Operation(
+            operationId = "updateFilm",
+            summary = "Update a film",
+            description = "Update a film from the database. " +
+                    "Requires authentication and admin privileges."
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "The film was updated",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = Film.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Film not found",
+                    content = @Content
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Not enough privileges",
+                    content = @Content
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "Bad token",
+                    content = @Content
+            ),
+    })
     public ResponseEntity<Film> patchFilm(@PathVariable("id") String id, @RequestBody List<Map<String, Object>> updates) throws JsonPatchException {
         //hateoas
         Optional<Film> result = Optional.ofNullable(filmService.updateFilm(id, updates));

@@ -253,15 +253,15 @@ public class UserController {
     @PatchMapping(path = "{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("#id==principal")
     @Operation(
-            operationId = "modifyOneUserDetails",
-            summary = "Modify a single user details",
-            description = "Modify the details for a user."  +
+            operationId = "updateOneUserDetails",
+            summary = "Update a single user details",
+            description = "Update the details for a user."  +
                     "you must be the requested user"
     )
     @ApiResponses({
             @ApiResponse(
                     responseCode = "200",
-                    description = "Modified user details",
+                    description = "Updated user details",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = User.class)
@@ -296,6 +296,37 @@ public class UserController {
 
     @PostMapping("/{id}/friend")
     @PreAuthorize("#id==principal")
+    @Operation(
+            operationId = "addFriend",
+            summary = "Add a friend to a user",
+            description = "Add a friend to a user."  +
+                    "you must be the requested user"
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Friendship details",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = Friendship.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Not found",
+                    content = @Content
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "Bad token",
+                    content = @Content
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Bad request: email and name are required, trying to add yourself as a friend , the friend is not registered in the database or the name and email of the friend do not match",
+                    content = @Content
+            ),
+    })
     public ResponseEntity<Friendship> addFriend(@PathVariable("id") String id, @RequestBody User friend){
         if (friend.getEmail() == null || friend.getName() == null)
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El email y el nombre son campos obligatorios.");
@@ -311,13 +342,38 @@ public class UserController {
         //mirar si como amigo se está intentando añadir a uno mismo
         if (user.getEmail().equals(friend.getEmail())) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No se puede añadir a uno mismo como amigo.");
 
-
         return ResponseEntity.ok(userService.addUserFrienship(user, amigo));
     }
 
 
     @DeleteMapping("/{userId}/friend/{friendId}")
     @PreAuthorize("#userId==principal")
+    @Operation(
+            operationId = "deleteFriend",
+            summary = "Delete a friend from a user",
+            description = "Delete a friend from a user."  +
+                    "you must be the requested user"
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Removed friendship details",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = Friendship.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Not found",
+                    content = @Content
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "Bad token",
+                    content = @Content
+            ),
+    })
     public ResponseEntity<Void> deleteFriend(@PathVariable("userId") String userId, @PathVariable("friendId") String friendId){
         User user = userService.getUserById(userId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario no encontrado: " + userId));
         User friend = userService.getUserById(friendId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario no encontrado: " + friendId));
