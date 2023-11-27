@@ -3,6 +3,7 @@ package gal.usc.etse.grei.es.project.controller;
 import javax.validation.Valid;
 
 import com.github.fge.jsonpatch.JsonPatchException;
+import gal.usc.etse.grei.es.project.model.Film;
 import gal.usc.etse.grei.es.project.model.User;
 import gal.usc.etse.grei.es.project.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -10,6 +11,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -36,6 +38,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @RequestMapping("comments")
+@Tag(name = "Comments API", description = "Comments related operations")
 public class CommentsController {
 
     private final CommentsService commentsService;
@@ -54,7 +57,7 @@ public class CommentsController {
     @Operation(
             operationId = "getOneComment",
             summary = "Get a single comment details",
-            description = "Get the details for a given comment. To see the user details " +
+            description = "Get the details for a given comment. To see the comment details " +
                     "you must be authenticated."
     )
     @ApiResponses({
@@ -101,24 +104,19 @@ public class CommentsController {
     @PostMapping
     @PreAuthorize("isAuthenticated()")
     @Operation(
-            operationId = "postOneComment",
-            summary = "Post a single comment details",
-            description = "Post de details. To see the user details " +
-                    "you must be the requested user, his friend, or have admin permissions."
+            operationId = "addComment",
+            summary = "Add a new comment",
+            description = "Add a new comment to the database. " +
+                    "Requires authentication"
     )
     @ApiResponses({
             @ApiResponse(
                     responseCode = "200",
-                    description = "The user details",
+                    description = "The comment details",
                     content = @Content(
                             mediaType = "application/json",
-                            schema = @Schema(implementation = User.class)
+                            schema = @Schema(implementation = Assessment.class)
                     )
-            ),
-            @ApiResponse(
-                    responseCode = "404",
-                    description = "User not found",
-                    content = @Content
             ),
             @ApiResponse(
                     responseCode = "403",
@@ -149,6 +147,33 @@ public class CommentsController {
 
     @DeleteMapping("{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN') or @commentsService.isCommentFromUser(#id, principal)")
+    @Operation(
+            operationId = "removeComment",
+            summary = "Remove a comment",
+            description = "Remove a comment from the database. " +
+                    "you must be the user owner of the comment or an admin."
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "The comment was removed"
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Comment not found",
+                    content = @Content
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Not enough privileges",
+                    content = @Content
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "Bad token",
+                    content = @Content
+            ),
+    })
     public ResponseEntity<Void> deleteComment(@PathVariable("id") String id) {
         //hateoas
         Optional<Assessment> result = commentsService.get(id);
@@ -182,6 +207,37 @@ public class CommentsController {
     }*/
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("((#movieId != null) and isAuthenticated()) or ((#userId != null) and (hasRole('ADMIN') or #userId == principal or @userService.areFriends(#userId,principal)))")
+    @Operation(
+            operationId = "getAllCommentsByUserIdORMovieId",
+            summary = "Get all comments by userId or movieId",
+            description = "Get the details of all comments by userId or movieId." +
+                    "you must be authenticated  (if movieId is specified) or be friends with the user, be the user or be an admin (if userId is specified)."
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "The comments details",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = Assessment.class)
+                    )
+            ),
+            @ApiResponse(
+            responseCode = "404",
+            description = "Comment not found",
+            content = @Content
+             ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Not enough privileges",
+                    content = @Content
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "Bad token",
+                    content = @Content
+            ),
+    })
     public ResponseEntity<Page<Assessment>> getCommentsByUserIdORMovieId(
                                                          @RequestParam(value = "userId", required = false) String userId,
                                                          @RequestParam(value = "movieId", required = false) String movieId,
@@ -265,6 +321,37 @@ public class CommentsController {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     @PreAuthorize("@commentsService.isCommentFromUser(#id, principal)")
+    @Operation(
+            operationId = "updateComment",
+            summary = "Update a comment",
+            description = "Update a comment from the database. " +
+                    "you must be the user owner of the comment."
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "The comment was updated",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = Assessment.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Comment not found",
+                    content = @Content
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Not enough privileges",
+                    content = @Content
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "Bad token",
+                    content = @Content
+            ),
+    })
     public ResponseEntity<Assessment> patchComment(@PathVariable("id") String id, @RequestBody List<Map<String, Object>> updates) throws JsonPatchException {
         //hateoas
         Optional<Assessment> result = Optional.ofNullable(commentsService.updateComment(id, updates));
