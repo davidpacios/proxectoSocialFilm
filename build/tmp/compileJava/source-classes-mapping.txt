@@ -14,8 +14,8 @@ gal/usc/etse/grei/es/project/model/ResourceType.java
  gal.usc.etse.grei.es.project.model.ResourceType
 gal/usc/etse/grei/es/project/model/User.java
  gal.usc.etse.grei.es.project.model.User
-gal/usc/etse/grei/es/project/controller/AuthController.java
- gal.usc.etse.grei.es.project.controller.AuthController
+gal/usc/etse/grei/es/project/service/PatchUtils.java
+ gal.usc.etse.grei.es.project.service.PatchUtils
 gal/usc/etse/grei/es/project/service/FilmService.java
  gal.usc.etse.grei.es.project.service.FilmService
 gal/usc/etse/grei/es/project/model/Film.java
@@ -60,5 +60,5 @@ gal/usc/etse/grei/es/project/model/Cast.java
  gal.usc.etse.grei.es.project.model.Cast
 gal/usc/etse/grei/es/project/repository/UserRepository.java
  gal.usc.etse.grei.es.project.repository.UserRepository
-gal/usc/etse/grei/es/project/service/PatchUtils.java
- gal.usc.etse.grei.es.project.service.PatchUtils
+gal/usc/etse/grei/es/project/controller/AuthController.java
+ gal.usc.etse.grei.es.project.controller.AuthController
