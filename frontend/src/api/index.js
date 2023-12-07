@@ -12,8 +12,14 @@ export default class API {
         return __instance
     }
 
-    async login(email, pass) {
+    async login(email, pass) {/*
+
         // TODO fetch from API and if successful, store token from response headers
+        const login = await fetch(`http://localhost:8081/login`,{
+            method: "POST",
+            headers: { 'Content-Type': 'application/json'},
+            body: JSON.stringify({ email: email, password: pass })
+        })*/
         const user = DATA.users.find(u => u.email === email)
 
         if(user.password === pass) {
