@@ -80,6 +80,8 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
         // Engadimos o token á resposta na cabeceira "Authentication"
         response.addHeader("Authentication", String.format("Bearer %s", tokenBuilder.compact()));
+        // Guardamos el ID del usuario en la respuesta
+        response.addHeader("UserID", ((User)authResult.getPrincipal()).getUsername());
     }
 
 }

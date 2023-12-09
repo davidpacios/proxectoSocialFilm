@@ -12,20 +12,19 @@ export default class API {
         return __instance
     }
 
-    async login(email, pass) {/*
-
-        // TODO fetch from API and if successful, store token from response headers
-        const login = await fetch(`http://localhost:8081/login`,{
+    async login(email, pass) {
+        const login = await fetch(`http://localhost:8080/login`,{
             method: "POST",
             headers: { 'Content-Type': 'application/json'},
             body: JSON.stringify({ email: email, password: pass })
-        })*/
-        const user = DATA.users.find(u => u.email === email)
+        })
 
-        if(user.password === pass) {
-            localStorage.setItem('user', email)
-            localStorage.setItem('token', 'TEST TOKEN')
-            this.#token = 'TEST TOKEN'
+        const token = login.headers.get('Authentication')
+        const userID = login.headers.get('UserID');
+        if(token !== null) {
+            localStorage.setItem('userID', userID)
+            localStorage.setItem('token', token)
+            this.#token = token
             return true
         } else {
             return false
@@ -69,11 +68,17 @@ export default class API {
         return DATA.movies.find(movie => movie.id === id)
     }
     async findUser(id) {
-        return new Promise(resolve => {
-            const user = DATA.users.find(user => user.email === id)
 
-            resolve(user)
-        })
+        const response = await fetch(`http://localhost:8080/users/${id}`, {
+            method: "GET",
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        });
+        return await response.json();
+
+
     }
 
     async findComments(

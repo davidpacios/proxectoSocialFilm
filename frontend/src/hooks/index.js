@@ -29,7 +29,7 @@ export function useMovie(id = '') {
 
 export function useUser(id = null) {
     const [data, setData] = useState([])
-    const userId = id === null ? localStorage.getItem('user') : id
+    const userId = id === null ? localStorage.getItem('userID') : id
 
     useEffect(() => {
         API.instance()

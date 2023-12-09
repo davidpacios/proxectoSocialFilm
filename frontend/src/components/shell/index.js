@@ -122,7 +122,8 @@ export function Shell({children, className = ''}) {
 
 function AppMenu() {
     const { logout } = useContext(AuthenticationContext)
-    const { user: { name = '', email = '', picture = '' } } = useUser()
+    //const { user: { name = '', email = '', picture = '' } } = useUser()
+    const { user: { name = '', email = ''} } = useUser()
 
     return <Menu>
         { ({open}) => <>
@@ -134,7 +135,8 @@ function AppMenu() {
 
                 <img className = 'h-12 w-12 rounded-full shadow'
                      alt = 'profile icon'
-                     src = { picture } />
+                     //src = { picture }
+                />
             </Menu.Button>
             <Transition show = { open }
                         className = 'absolute right-4 top-0 pt-2 transform-gpu duration-500 ease-spring'
