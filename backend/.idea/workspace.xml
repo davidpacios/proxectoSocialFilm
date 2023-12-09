@@ -12,13 +12,11 @@
       <change beforePath="$PROJECT_DIR$/.gradle/6.7.1/javaCompile/javaCompile.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/6.7.1/javaCompile/javaCompile.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/java/main/gal/usc/etse/grei/es/project/configuration/SecurityConfiguration.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/gal/usc/etse/grei/es/project/configuration/SecurityConfiguration.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/gal/usc/etse/grei/es/project/service/UserService.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/gal/usc/etse/grei/es/project/service/UserService.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build/tmp/compileJava/source-classes-mapping.txt" beforeDir="false" afterPath="$PROJECT_DIR$/build/tmp/compileJava/source-classes-mapping.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/gal/usc/etse/grei/es/project/filter/AuthenticationFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gal/usc/etse/grei/es/project/filter/AuthenticationFilter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/gal/usc/etse/grei/es/project/service/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gal/usc/etse/grei/es/project/service/UserService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/gal/usc/etse/grei/es/project/service/CommentsService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gal/usc/etse/grei/es/project/service/CommentsService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../frontend/src/api/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/api/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/src/components/shell/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/components/shell/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/src/hooks/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/hooks/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../frontend/src/pages/registry/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/pages/registry/index.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -80,6 +78,7 @@
       <workItem from="1701944594953" duration="1051000" />
       <workItem from="1702027885262" duration="1258000" />
       <workItem from="1702112234834" duration="2068000" />
+      <workItem from="1702140918324" duration="7113000" />
     </task>
     <servers />
   </component>

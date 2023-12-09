@@ -65,7 +65,14 @@ export default class API {
         })
     }
     async findMovie(id) {
-        return DATA.movies.find(movie => movie.id === id)
+        const response = await fetch(`http://localhost:8080/movies/${id}`, {
+            method: "GET",
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        });
+        return await response.json();
     }
     async findUser(id) {
 
@@ -83,41 +90,99 @@ export default class API {
 
     async findComments(
         {
-            filter: { movie = '', user = '' } = { movie: '', user: '' },
+            filter: { movieId = '', userId = '' } = { movieId: '', userId: '' },
             sort,
             pagination: {page = 0, size = 10} = { page: 0, size: 10}
-        } = {
-            filter: { movie: '', user: '' },
-            sort: {},
-            pagination: { page: 0, size: 10}
         }
     ) {
-        return new Promise(resolve => {
-            const filtered = DATA.comments
-                ?.filter(comment => comment?.movie?.id === movie)
+        try {
+            let queryString = '';
 
-            const data = {
-                content: filtered?.slice(size * page, size * page + size),
-                pagination: {
-                    hasNext: size * page + size < filtered.length,
-                    hasPrevious: page > 0
-                }
+            if (movieId) {
+                queryString += `movieId=${movieId}&`;
             }
 
-            resolve(data)
-        })
+            if (userId) {
+                queryString += `userId=${userId}&`;
+            }
+
+            queryString += `page=${page}&size=${size}&sort=${sort}`;
+            console.log(`http://localhost:8080/comments?${queryString}`)
+
+            const response = await fetch(`http://localhost:8080/comments?${queryString}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                },
+            });
+
+            if (response.ok) {
+                return await response.json();
+            } else {
+                // Manejar errores si la respuesta no es exitosa
+                const errorData = await response.json();
+                console.error('Error al obtener comentarios:', errorData);
+                throw new Error('Error al obtener comentarios');
+            }
+        } catch (error) {
+            console.error('Error en la solicitud:', error);
+            throw error; // Puedes manejar el error según tus necesidades
+        }
     }
 
     async createComment(comment) {
-        return new Promise(resolve => {
-            DATA.comments.unshift(comment)
+        try {
+            const response = await fetch('http://localhost:8080/comments', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                },
+                body: JSON.stringify(comment),
+            });
 
-            resolve(true)
-        })
+            if (response.ok) {
+                const createdComment = await response.json();
+                console.log('Comentario creado:', createdComment);
+                return createdComment;
+            } else {
+                // Manejar errores si la respuesta no es exitosa
+                const errorData = await response.json();
+                console.error('Error al crear el comentario:', errorData);
+                throw new Error('Error al crear el comentario');
+            }
+        } catch (error) {
+            console.error('Error en la solicitud:', error);
+            throw error; // Puedes manejar el error según tus necesidades
+        }
     }
 
     async createUser(user) {
-        console.log(user)
+        console.log (user)
+        try {
+            const response = await fetch('http://localhost:8080/users', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(user),
+            });
+
+            if (response.ok) {
+                const createdUser = await response.json();
+                console.log('Usuario creado:', createdUser);
+                return createdUser;
+            } else {
+                // Manejar errores si la respuesta no es exitosa
+                const errorData = await response.json();
+                console.error('Error al crear el usuario:', errorData);
+                throw new Error('Error al crear el usuario');
+            }
+        } catch (error) {
+            console.error('Error en la solicitud:', error);
+            throw error; // Puedes manejar el error según tus necesidades
+        }
     }
 
     async updateUser(id, user) {

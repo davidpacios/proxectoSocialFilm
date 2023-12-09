@@ -17,6 +17,8 @@ export default function Login() {
     const submit = async (event) => {
         event.preventDefault()
         const data = new FormData(event.target)
+        //mirar el nombre de las columnas de los campos
+
         const birthday = data.get('birthday')
 
         try {
@@ -29,6 +31,16 @@ export default function Login() {
                 setErrors(true)
             } else {
                 await create({
+                    email: data.get('email'),
+                    name: data.get('name'),
+                    password: data.get('password'),
+                    birthday: {
+                        day,
+                        month,
+                        year
+                    }
+                })
+                console.log({
                     email: data.get('email'),
                     name: data.get('name'),
                     password: data.get('password'),
@@ -59,7 +71,7 @@ export default function Login() {
                   autoComplete = 'off'>
                 <Logo className = 'text-6xl mb-8' logoSize = 'w-12 h-12'/>
                 <Input type = 'email'
-                       name = 'user'
+                       name = 'email'
                        label = 'Email'
                        labelClassName = 'mb-4'
                        errors = { errors }

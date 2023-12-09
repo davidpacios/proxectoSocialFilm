@@ -97,7 +97,7 @@ public class CommentsService {
         // Obtener los comentarios de la pelicula por su ID
         //List<Assessment> comments = commentsRepository.findByMovieId(movieId);
         Page<Assessment> comments = commentsRepository.findAll(Example.of(new Assessment().setMovie(film), matcher), request);
-        if (comments.isEmpty()) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No se encontraron comentarios para la pelicula con ID " + movieId);
+        //if (comments.isEmpty()) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No se encontraron comentarios para la pelicula con ID " + movieId);
 
         return comments;
     }
