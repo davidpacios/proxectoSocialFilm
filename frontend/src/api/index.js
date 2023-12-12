@@ -91,21 +91,17 @@ export default class API {
     async findComments(
         {
             filter: { movieId = '', userId = '' } = { movieId: '', userId: '' },
-            sort,
-            pagination: {page = 0, size = 10} = { page: 0, size: 10}
+            pagination: { page = 0, size = 10, sort = 'id' } = { page: 0, size: 10, sort: 'id' }
         }
     ) {
         try {
             let queryString = '';
 
-            if (movieId) {
-                queryString += `movieId=${movieId}&`;
-            }
-
-            if (userId) {
-                queryString += `userId=${userId}&`;
-            }
-
+            const pathArray = window.location.pathname.split('/');
+            const movieIdIndex = pathArray.indexOf('movies') + 1; // Index siguiente al de 'movies'
+            movieId = movieIdIndex < pathArray.length ? pathArray[movieIdIndex] : '';
+            movieId = '716354' //Esta pelicula tiene comentarios //TODO: PRuebas
+            queryString += `movieId=${movieId}&`;
             queryString += `page=${page}&size=${size}&sort=${sort}`;
             console.log(`http://localhost:8080/comments?${queryString}`)
 

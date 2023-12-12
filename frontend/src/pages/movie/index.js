@@ -119,10 +119,40 @@ function Cast({ movie }) {
 }
 function Comments({ movie }) {
     const { comments, createComment } = useComments({ filter: { movie : movie.id } } )
+    return (
+        <div className='comments-container'>
+            <h2>Comentarios</h2>
 
-    return <div className = 'mt-16'>
-        <TODO>Añadir lista de comentarios y formulario para añadir nuevo comentario</TODO>
-    </div>
+            {/* Lista de comentarios */}
+            {comments.totalElements > 0 ? (
+                <div className='comments-list'>
+                    {comments.content.map(comment => (
+                        <div key={comment.id} className='comment-item'>
+                            <p className='user-name'>User: {comment.user.name}</p>
+                            <p className='rating'>Rating: {comment.rating}</p>
+                            <div className='comment-details'>
+                                <p className='comment-text'>Comentario: {comment.comment}</p>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            ) : (
+                <p>No hay comentarios disponibles.</p>
+            )}
+
+            {/* Formulario para añadir nuevo comentario */}
+            <form onSubmit={(e) => {
+                e.preventDefault();
+                // Lógica para crear un nuevo comentario
+                // Puedes agregar la lógica para crear un nuevo comentario aquí
+            }}>
+                <label>Añadir Comentario:</label>
+                <input type="text" />
+                <button type="submit">Enviar</button>
+            </form>
+        </div>
+    );
+
 }
 function Tagline({ movie }) {
     if(movie.tagline) {
