@@ -2,9 +2,9 @@ import { useParams } from 'react-router-dom'
 import { ArrowCircleLeftOutline as Back, PencilAltOutline as Edit } from '@graywolfai/react-heroicons'
 import ReactPlayer from 'react-player'
 
-import { Shell, Link, TODO, Separator } from '../../components'
+import { Shell, Link, Separator } from '../../components'
 
-import { useMovie, useComments } from '../../hooks'
+import {useMovie, useComments, useUser} from '../../hooks'
 
 import Disney from './icons/disney_plus.png'
 import Play from './icons/google_play.png'
@@ -118,40 +118,77 @@ function Cast({ movie }) {
     </>
 }
 function Comments({ movie }) {
+    const user = useUser().user;
     const { comments, createComment } = useComments({ filter: { movie : movie.id } } )
     return (
-        <div className='comments-container'>
-            <h2>Comentarios</h2>
-
-            {/* Lista de comentarios */}
-            {comments.totalElements > 0 ? (
-                <div className='comments-list'>
-                    {comments.content.map(comment => (
-                        <div key={comment.id} className='comment-item'>
-                            <p className='user-name'>User: {comment.user.name}</p>
-                            <p className='rating'>Rating: {comment.rating}</p>
-                            <div className='comment-details'>
-                                <p className='comment-text'>Comentario: {comment.comment}</p>
+        <div className="bg-white p-8">
+            <h2 className="text-2xl font-bold mb-4">Comentarios</h2>
+            <div className="flex mb-8">
+                <div className="w-1/2 pr-4">
+                    <div className="max-w-md h-full mx-auto bg-white shadow-md rounded-md p-6 flex flex-col justify-between">
+                        <form onSubmit={(e) => {
+                            e.preventDefault();
+                            const commentValue = e.target.elements.comment.value.trim();
+                            if (commentValue) {
+                                const newComment = {
+                                    comment: commentValue,
+                                    rating: e.target.elements.rating.value,
+                                    movie: movie,
+                                    user: user
+                                };
+                                createComment(newComment);
+                                // Puedes agregar lógica adicional aquí, como enviar el comentario a tu backend
+                            } else {
+                                console.log('El comentario no puede estar vacío.');
+                                // Puedes agregar un mensaje o lógica adicional para manejar el caso de un comentario vacío
+                            }
+                        }}>
+                            <div className="mb-4">
+                                <label className="block text-gray-700 font-bold mb-2">
+                                    Añadir Comentario:
+                                    <input type="text" id="comment" name="comment" placeholder="Escribe tu comentario" className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:border-orange-300" />
+                                </label>
                             </div>
-                        </div>
-                    ))}
-                </div>
-            ) : (
-                <p>No hay comentarios disponibles.</p>
-            )}
 
-            {/* Formulario para añadir nuevo comentario */}
-            <form onSubmit={(e) => {
-                e.preventDefault();
-                // Lógica para crear un nuevo comentario
-                // Puedes agregar la lógica para crear un nuevo comentario aquí
-            }}>
-                <label>Añadir Comentario:</label>
-                <input type="text" />
-                <button type="submit">Enviar</button>
-            </form>
+                            <div className="mb-4">
+                                <label className="block text-gray-700 font-bold mb-2">
+                                    Valoración (1-5):
+                                    <input type="number" id="rating" name="rating" min="1" max="5" placeholder="1-5" className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:border-orange-300" />
+                                </label>
+                            </div>
+
+                            <button type="submit" className="bg-red-500 text-black font-bold px-4 py-2 rounded-md hover:bg-red-600 focus:outline-none focus:ring focus:border-red-300">Enviar</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div className="w-1/2 pl-4">
+                    <h3 className="text-xl font-bold mb-4 text-orange-500">Lista de Comentarios</h3>
+
+                    {/* Lista horizontal de comentarios */}
+                    {comments.totalElements > 0 ? (
+                        <div className='comments-list flex overflow-x-auto'>
+                            {comments.content.map(comment => (
+                                <div key={comment.id} className='comment-item flex-shrink-0 mr-4 w-64'>
+                                    <div className='max-w-xs bg-white shadow-md rounded-md p-4'>
+                                        <p className='text-gray-700 font-semibold'>User: {comment.user.name}</p>
+                                        <p className='text-gray-700'>Rating: {comment.rating}</p>
+                                        <div className='comment-details'>
+                                            <p className='text-gray-800'>Comentario: {comment.comment}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <p className="text-gray-700">No hay comentarios disponibles.</p>
+                    )}
+                </div>
+            </div>
         </div>
+
     );
+
 
 }
 function Tagline({ movie }) {

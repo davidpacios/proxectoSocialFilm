@@ -21,6 +21,7 @@ export default class API {
 
         const token = login.headers.get('Authentication')
         const userID = login.headers.get('UserID');
+
         if(token !== null) {
             localStorage.setItem('userID', userID)
             localStorage.setItem('token', token)
@@ -100,7 +101,7 @@ export default class API {
             const pathArray = window.location.pathname.split('/');
             const movieIdIndex = pathArray.indexOf('movies') + 1; // Index siguiente al de 'movies'
             movieId = movieIdIndex < pathArray.length ? pathArray[movieIdIndex] : '';
-            movieId = '716354' //Esta pelicula tiene comentarios //TODO: PRuebas
+            //movieId = '716354' //Esta pelicula tiene comentarios //TODO: PRuebas
             queryString += `movieId=${movieId}&`;
             queryString += `page=${page}&size=${size}&sort=${sort}`;
             console.log(`http://localhost:8080/comments?${queryString}`)
