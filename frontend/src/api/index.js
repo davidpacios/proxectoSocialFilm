@@ -102,7 +102,14 @@ export default class API {
             const movieIdIndex = pathArray.indexOf('movies') + 1; // Index siguiente al de 'movies'
             movieId = movieIdIndex < pathArray.length ? pathArray[movieIdIndex] : '';
             //movieId = '716354' //Esta pelicula tiene comentarios //TODO: PRuebas
-            queryString += `movieId=${movieId}&`;
+            if (movieId) {
+                queryString += `movieId=${movieId}&`;
+            }
+            if (userId) {
+                queryString += `userId=${userId}&`;
+            }
+
+
             queryString += `page=${page}&size=${size}&sort=${sort}`;
             console.log(`http://localhost:8080/comments?${queryString}`)
 

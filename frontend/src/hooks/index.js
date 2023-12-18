@@ -54,7 +54,10 @@ export function useUser(id = null) {
     }
 }
 
-export function useComments(query = {}){
+export function useComments(query = {
+    filter: { } ,
+    pagination: {  }
+}){
     const [data, setData] = useState({ content: [], pagination: { hasNext: false, hasPrevious: false }})
     const queryString = JSON.stringify(query)
 
