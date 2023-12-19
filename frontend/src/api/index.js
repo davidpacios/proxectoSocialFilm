@@ -1,4 +1,5 @@
 import DATA from './data'
+import {useMovie} from "../hooks";
 
 let __instance = null
 
@@ -97,7 +98,6 @@ export default class API {
     ) {
         try {
             let queryString = '';
-
             const pathArray = window.location.pathname.split('/');
             const movieIdIndex = pathArray.indexOf('movies') + 1; // Index siguiente al de 'movies'
             movieId = movieIdIndex < pathArray.length ? pathArray[movieIdIndex] : '';

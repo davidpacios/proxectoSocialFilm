@@ -137,10 +137,8 @@ function Comments({ movie }) {
                                     user: user
                                 };
                                 createComment(newComment);
-                                // Puedes agregar lógica adicional aquí, como enviar el comentario a tu backend
                             } else {
                                 console.log('El comentario no puede estar vacío.');
-                                // Puedes agregar un mensaje o lógica adicional para manejar el caso de un comentario vacío
                             }
                         }}>
                             <div className="mb-4">
