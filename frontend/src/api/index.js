@@ -1,29 +1,27 @@
 import DATA from './data'
-import {useMovie} from "../hooks";
-
 let __instance = null
 
 export default class API {
     #token = sessionStorage.getItem('token') || null
 
     static instance() {
-        if(__instance == null)
+        if (__instance == null)
             __instance = new API()
 
         return __instance
     }
 
     async login(email, pass) {
-        const login = await fetch(`http://localhost:8080/login`,{
+        const login = await fetch(`http://localhost:8080/login`, {
             method: "POST",
-            headers: { 'Content-Type': 'application/json'},
-            body: JSON.stringify({ email: email, password: pass })
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({email: email, password: pass})
         })
 
         const token = login.headers.get('Authentication')
         const userID = login.headers.get('UserID');
 
-        if(token !== null) {
+        if (token !== null) {
             localStorage.setItem('userID', userID)
             localStorage.setItem('token', token)
             this.#token = token
@@ -32,21 +30,23 @@ export default class API {
             return false
         }
     }
+
     async logout() {
         this.#token = null
         localStorage.clear()
 
         return true
     }
+
     async findMovies(
         {
-            filter: { genre = '', title = '', status = '' } = { genre : '', title : '', status : '' },
+            filter: {genre = '', title = '', status = ''} = {genre: '', title: '', status: ''},
             sort,
-            pagination: {page = 0, size = 7} = { page: 0, size: 7 }
+            pagination: {page = 0, size = 7} = {page: 0, size: 7}
         } = {
-            filter: { genre : '', title : '', status : '' },
+            filter: {genre: '', title: '', status: ''},
             sort: {},
-            pagination: { page: 0, size: 7 }
+            pagination: {page: 0, size: 7}
         }
     ) {
         return new Promise(resolve => {
@@ -66,6 +66,7 @@ export default class API {
             resolve(data)
         })
     }
+
     async findMovie(id) {
         const response = await fetch(`http://localhost:8080/movies/${id}`, {
             method: "GET",
@@ -76,6 +77,7 @@ export default class API {
         });
         return await response.json();
     }
+
     async findUser(id) {
 
         const response = await fetch(`http://localhost:8080/users/${id}`, {
@@ -92,8 +94,8 @@ export default class API {
 
     async findComments(
         {
-            filter: { movieId = '', userId = '' } = { movieId: '', userId: '' },
-            pagination: { page = 0, size = 10, sort = 'id' } = { page: 0, size: 10, sort: 'id' }
+            filter: {movieId = '', userId = ''} = {movieId: '', userId: ''},
+            pagination: {page = 0, size = 10, sort = 'id'} = {page: 0, size: 10, sort: 'id'}
         }
     ) {
         try {
@@ -163,7 +165,7 @@ export default class API {
     }
 
     async createUser(user) {
-        console.log (user)
+        console.log(user)
         try {
             const response = await fetch('http://localhost:8080/users', {
                 method: 'POST',
@@ -191,5 +193,44 @@ export default class API {
 
     async updateUser(id, user) {
         console.log(user)
+    }
+
+
+    //se quiere hacer un update de la pelicula mediante llamada Patch de la api
+    //aquí se recibe toda la información de la pelicula pero en el patch es una coleccion de lo que se quiere updatear
+    async updateMovieFilm(id, infoMovie) {
+        try {
+            // Crear un array de objetos en el formato esperado
+            const patchBody = Object.keys(infoMovie).map(key => {
+                return {
+                    op: "replace",
+                    path: `/${key}`,
+                    value: infoMovie[key]
+                };
+            });
+
+            const response = await fetch(`http://localhost:8080/movies/${id}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                },
+                body: JSON.stringify(patchBody),
+            });
+
+            if (response.ok) {
+                const updatedMovie = await response.json();
+                console.log('Pelicula actualizada:', updatedMovie);
+                return updatedMovie;
+            } else {
+                // Manejar errores si la respuesta no es exitosa
+                const errorData = await response.json();
+                console.error('Error al actualizar la pelicula:', errorData);
+                throw new Error('Error al actualizar la pelicula');
+            }
+        } catch (error) {
+            console.error('Error en la solicitud:', error);
+            throw error; // Puedes manejar el error según tus necesidades
+        }
     }
 }

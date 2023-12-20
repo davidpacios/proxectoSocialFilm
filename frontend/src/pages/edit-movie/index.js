@@ -11,6 +11,8 @@ import Prime from "../movie/icons/prime_video.png";
 import Youtube from "../movie/icons/youtube.png";
 import ReactPlayer from "react-player";
 import {useEffect, useState} from "react";
+import updateMovieFilm from "../../api/";
+import API from "../../api/";
 
 
 const backdrop = movie => {
@@ -38,9 +40,17 @@ export default function Profile() {
         setMovie(updatedMovie);
     };
 
-    const handleGuardarCambios = () => {
-        // Lógica para guardar los cambios
-        console.log('Guardando cambios:', movieM);
+
+    const handleGuardarCambios = async () => {
+        try {
+            // Lógica para guardar los cambios
+            console.log('Guardando cambios:', movieM);
+            await API.instance().updateMovieFilm(movieM.id, movieM);
+            console.log('Cambios guardados correctamente.');
+            window.history.back();
+        } catch (error) {
+            console.error('Error al guardar los cambios:', error);
+        }
     };
 
     return <Shell>
