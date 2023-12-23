@@ -28,23 +28,47 @@ export default function EditMovie() {
     const { id } = useParams()
     const movie = useMovie(id)
 
-    // Estado para la película y la función de actualización
-    const [movieM, setMovie] = useState(movie);
+    const [editedMovie, setMovie] = useState(movie);
 
+    // useEffect para actualizar editedUser cuando user cambie
     useEffect(() => {
-        setMovie(movie);
+        setMovie({
+            title: movie.title || '',
+            overview: movie.overview || '',
+            crew: movie.crew || '',
+        });
     }, [movie]);
 
-    // Función para actualizar la película
-    const updateMovie = (updatedMovie) => {
-        setMovie(updatedMovie);
+// Función para actualizar la película
+    const updateMovie = (e) => {
+        // Manejar cambios en campos específicos del crew
+        const { name, value } = e.target;
+        if (name.startsWith("crew")) {
+            const id = name.split("/")[1]; //recuperar el id del crew
+            //recuperar el indice del crew
+            const index = movie.crew.findIndex((crew) => crew.id === id);
+            setMovie((prevEditedMovie) => {
+                const newCrew = [...prevEditedMovie.crew];
+                newCrew[index].name = e.target.value;
+                return {
+                    ...prevEditedMovie,
+                    crew: newCrew,
+                };
+            });
+        } else {
+            const { name, value } = e.target;
+            setMovie((prevEditedMovie) => ({
+                ...prevEditedMovie,
+                [name]: value,
+            }));
+        }
     };
 
     const handleGuardarCambios = async () => {
         try {
             // Lógica para guardar los cambios
-            console.log('Guardando cambios:', movieM);
-            await API.instance().updateMovieFilm(movieM.id, movieM);
+            console.log('Guardando cambios:', editedMovie);
+            await API.instance().updateMovieFilm(movie.id, editedMovie);
             console.log('Cambios guardados correctamente.');
             window.history.back();
         } catch (error) {
@@ -54,8 +78,8 @@ export default function EditMovie() {
 
     return <Shell>
         <img style = {{ height: '36rem' }}
-             src = { backdrop(movieM) }
-             alt = { `${movieM.title} backdrop` }
+             src = { backdrop(movie) }
+             alt = { `${movie.title} backdrop` }
              className = 'absolute top-2 left-0 right-0 w-full object-cover filter blur transform scale-105' />
 
         <Link variant = 'primary'
@@ -68,10 +92,10 @@ export default function EditMovie() {
 
 
         <div className = 'mx-auto w-full max-w-screen-2xl p-8'>
-            <Header movie={movie} updateMovie={updateMovie} />
-            <Info movie = { movie } updateMovie={updateMovie} />
+            <Header movie={movie} editedMovie={editedMovie} updateMovie={updateMovie} />
+            <Info movie = { movie } editedMovie={editedMovie} updateMovie={updateMovie} />
             <View movie = { movie }/>
-            <Cast movie = { movie } updateMovie={updateMovie}/>
+            <Cast movie = { movie } editedMovie={editedMovie} updateMovie={updateMovie}/>
         </div>
 
         <div style={{ textAlign: 'center', marginBottom: '20px' }}>
@@ -116,26 +140,7 @@ export default function EditMovie() {
 
     </Shell>
 }
-function Header({ movie, updateMovie }) {
-    // Estado para la película
-    const [editedMovie, setEditedMovie] = useState({
-        ...movie,
-        title: movie.title || '', // Asegurar que el título tenga un valor no nulo o no indefinido
-    });
-
-    const handleTitleChange = (e) => {
-        const newTitle = e.target.value;
-        setEditedMovie((prevEditedMovie) => ({
-            ...prevEditedMovie,
-            title: newTitle,
-        }));
-        updateMovie(editedMovie);
-    };
-
-    useEffect(() => {
-        // Actualizar el estado cuando la película cambia
-        setEditedMovie({ ...movie });
-    }, [movie]);
+function Header({ movie, editedMovie, updateMovie }) {
 
     return (
         <header className="mt-64 relative flex items-end pb-8 mb-8">
@@ -151,7 +156,8 @@ function Header({ movie, updateMovie }) {
               text-left text-white text-6xl font-bold p-8 ml-4 
               placeholder-gray-800 placeholder-opacity-50 w-full h-32`}
                     value={editedMovie.title}
-                    onChange={handleTitleChange}
+                    name={'title'}
+                    onChange={(e) => updateMovie(e)}
                     placeholder={movie.title}
                 />
                 <Tagline movie={movie} />
@@ -161,23 +167,7 @@ function Header({ movie, updateMovie }) {
 }
 
 
-function Info({ movie, updateMovie }) {
-    const [editedMovie, setEditedMovie] = useState({ ...movie });
-
-    const handleInfoChange = (value, attribute) => {
-        setEditedMovie((prevMovie) => ({
-            ...prevMovie,
-            [attribute]: value,
-        }));
-
-        // Actualizar la película en el componente padre (Profile) utilizando la función proporcionada
-        updateMovie(editedMovie);
-    }
-
-    useEffect(() => {
-        setEditedMovie({ ...movie });
-    }, [movie]);
-
+function Info({ movie, editedMovie, updateMovie }) {
     return <div className = 'grid grid-cols-5 gap-4'>
         <div className = 'col-span-4'>
             <h2 className = 'font-bold text-2xl text-white bg-gradient-to-br from-pink-500 via-red-500 to-yellow-500 p-4 shadow'>
@@ -186,17 +176,18 @@ function Info({ movie, updateMovie }) {
             <textarea
                 className="pt-8 p-4 w-full h-40 bg-black bg-opacity-50 backdrop-filter backdrop-blur text-white font-normal"
                 value={editedMovie.overview}
-                onChange={(e) => handleInfoChange(e.target.value, 'overview')}
+                name={'overview'}
+                onChange={(e) => updateMovie(e)}
                 placeholder={movie.overview}
             />
 
         </div>
         <div className = 'text-right'>
             <dl className = 'space-y-2'>
-                <CrewMember movie = { movie } job = 'Director' label = 'Dirección' updateMovie={updateMovie}/>
-                <CrewMember movie = { movie } job = 'Producer' label = 'Producción' updateMovie={updateMovie}/>
-                <CrewMember movie = { movie } job = 'Screenplay' label = 'Guión' updateMovie={updateMovie}/>
-                <CrewMember movie = { movie } job = 'Original Music Composer' label = 'Banda sonora' updateMovie={updateMovie}/>
+                <CrewMember movie = { movie } job = 'Director' label = 'Dirección' editedMovie={editedMovie} updateMovie={updateMovie}/>
+                <CrewMember movie = { movie } job = 'Producer' label = 'Producción' editedMovie={editedMovie} updateMovie={updateMovie}/>
+                <CrewMember movie = { movie } job = 'Screenplay' label = 'Guión' editedMovie={editedMovie} updateMovie={updateMovie}/>
+                <CrewMember movie = { movie } job = 'Original Music Composer' label = 'Banda sonora' editedMovie={editedMovie} updateMovie={updateMovie}/>
             </dl>
         </div>
     </div>
@@ -236,45 +227,33 @@ function Tagline({ movie }) {
         return <span className = 'block text-3xl font-semibold py-4'>&nbsp;</span>
     }
 }
-function CrewMember({ movie, job, label, updateMovie }) {
-    // Estado para los miembros del equipo
-    const [editedPeople, setEditedPeople] = useState([]);
-
-    // Efecto para actualizar editedPeople cuando movie cambia
-    useEffect(() => {
-        const people = movie?.crew?.filter(p => p.job === job) || [];
-        setEditedPeople([...people]);
-    }, [movie, job]);
-
-    // Handler para cambiar el nombre de un miembro del equipo
-    const handleCrewMemberChange = (value, index) => {
-        setEditedPeople((prevPeople) => {
-            const newPeople = [...prevPeople];
-            newPeople[index].name = value;
-            return newPeople;
-        });
-
-        updateMovie(movie);
-    };
-
-    if (editedPeople.length !== 0) {
-        return (
-            <div>
-                <dt className='font-bold text-sm'>{label}</dt>
-                {editedPeople.map((p, index) => (
-                    <input
-                        type="text"
-                        value={p.name}
-                        onChange={(e) => handleCrewMemberChange(e.target.value, index)}
-                        className="text-sm block text-black p-2 border border-gray-300 rounded mt-2"
-                        key={`${job}/${p.id}`}
-                    />
-                ))}
-            </div>
-        );
-    } else {
-        return null;
+function CrewMember({ movie, job, label, editedMovie, updateMovie }) {
+    const people= movie?.crew?.filter(p => p.job === job) || []
+    if(editedMovie.crew && editedMovie.crew.length > 0) {
+        const peopleEdit = editedMovie.crew.filter(p => p.job === job) || []
+        if(peopleEdit.length > 0) {
+            peopleEdit.forEach((p, index) => {
+                people[index] = p
+            })
+        }
     }
+
+    if(people.length === 0) return null
+    return (
+        <div>
+            <dt className='font-bold text-sm'>{label}</dt>
+            {people.map((p, index) => (
+                <input
+                    type="text"
+                    value={p.name}
+                    name={`crew/${p.id}`}
+                    onChange={(e) => {updateMovie(e);}}
+                    className="text-sm block text-black p-2 border border-gray-300 rounded mt-2"
+                    key={`${job}/${p.id}`}
+                />
+            ))}
+        </div>
+    );
 }
 function Links({ movie }) {
     const resources = movie?.resources?.filter(r => !['POSTER', 'BACKDROP', 'TRAILER'].includes(r.type))

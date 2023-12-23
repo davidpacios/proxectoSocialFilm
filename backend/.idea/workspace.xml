@@ -6,12 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="bcb763cd-e764-4499-9201-be3f91d4255f" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/src/api/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/api/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/src/hooks/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/hooks/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/src/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/index.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../frontend/src/pages/edit-movie/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/pages/edit-movie/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/src/pages/profile/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/pages/profile/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../frontend/src/pages/registry/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/../frontend/src/pages/registry/index.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -104,7 +99,7 @@
       <workItem from="1703013931177" duration="654000" />
       <workItem from="1703060931352" duration="1630000" />
       <workItem from="1703063355001" duration="444000" />
-      <workItem from="1703327783838" duration="1691000" />
+      <workItem from="1703327783838" duration="2003000" />
     </task>
     <servers />
   </component>
