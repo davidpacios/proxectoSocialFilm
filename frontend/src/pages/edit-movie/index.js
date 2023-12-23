@@ -24,7 +24,7 @@ const backdrop = movie => {
 const poster = movie => movie?.resources?.find(res => res?.type === 'POSTER')?.url
 
 
-export default function Profile() {
+export default function EditMovie() {
     const { id } = useParams()
     const movie = useMovie(id)
 
@@ -39,7 +39,6 @@ export default function Profile() {
     const updateMovie = (updatedMovie) => {
         setMovie(updatedMovie);
     };
-
 
     const handleGuardarCambios = async () => {
         try {
@@ -61,18 +60,12 @@ export default function Profile() {
 
         <Link variant = 'primary'
               className = 'rounded-full absolute text-white top-4 left-8 flex items-center pl-2 pr-4 py-2 gap-4'
-              to = '/'
+              to = {`/movies/${id}`}
         >
             <Back className = 'w-8 h-8'/>
             <span>Volver</span>
         </Link>
 
-        <Link variant = 'primary'
-              className = 'rounded-full absolute text-white top-4 right-8 flex items-center px-2 py-2 gap-4'
-              to = {`/movies/${id}/edit`}
-        >
-            <Edit className = 'w-8 h-8'/>
-        </Link>
 
         <div className = 'mx-auto w-full max-w-screen-2xl p-8'>
             <Header movie={movie} updateMovie={updateMovie} />

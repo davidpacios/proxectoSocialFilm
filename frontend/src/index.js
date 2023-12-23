@@ -14,6 +14,7 @@ import CreateMovie from './pages/create-movie'
 import Profile from './pages/profile'
 import Friends from './pages/friends'
 import NotFound from './pages/not-found'
+import EditProfile from './pages/edit-profile'
 
 import './styles.css'
 
@@ -45,6 +46,9 @@ ReactDOM.render(
                     </SecuredRoute>
                     <SecuredRoute exact path = '/profile'>
                         <Profile />
+                    </SecuredRoute>
+                    <SecuredRoute exact path = '/profile/edit'>
+                        <EditProfile />
                     </SecuredRoute>
                     <SecuredRoute exact path = '/friends'>
                         <Friends />

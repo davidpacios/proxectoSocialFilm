@@ -192,7 +192,40 @@ export default class API {
     }
 
     async updateUser(id, user) {
-        console.log(user)
+        try {
+            // Crear un array de objetos en el formato esperado
+            const patchBody = Object.keys(user).map(key => {
+                return {
+                    op: "replace",
+                    path: `/${key}`,
+                    value: user[key]
+                };
+            });
+            const response = await fetch(`http://localhost:8080/users/${id}`, {
+                method: 'PATCH', // O el método que corresponda para actualizar usuarios en tu API
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                },
+                body: JSON.stringify(patchBody),
+            });
+            console.log(patchBody)
+
+
+            if (response.ok) {
+                const updatedUser = await response.json();
+                console.log('Usuario actualizado:', updatedUser);
+                return updatedUser;
+            } else {
+                // Manejar errores si la respuesta no es exitosa
+                const errorData = await response.json();
+                console.error('Error al actualizar el usuario:', errorData);
+                throw new Error('Error al actualizar el usuario');
+            }
+        } catch (error) {
+            console.error('Error en la solicitud:', error);
+            throw error; // Puedes manejar el error según tus necesidades
+        }
     }
 
 
@@ -217,6 +250,7 @@ export default class API {
                 },
                 body: JSON.stringify(patchBody),
             });
+            console.log(patchBody)
 
             if (response.ok) {
                 const updatedMovie = await response.json();

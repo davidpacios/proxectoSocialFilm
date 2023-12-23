@@ -8,8 +8,6 @@ import {ArrowCircleLeftOutline as Back, PencilAltOutline as Edit} from "@graywol
 
 export default function Profile() {
     const user = useUser().user;
-    console.log(user);
-
     return (
         <Shell>
             <img style = {{ height: '36rem' }}
@@ -25,11 +23,16 @@ export default function Profile() {
                 <span>Volver</span>
             </Link>
 
+            <Link variant = 'primary'
+                  className = 'rounded-full absolute text-white top-4 right-8 flex items-center px-2 py-2 gap-4'
+                  to = {`/profile/edit`}
+            >
+                <Edit className = 'w-8 h-8'/>
+            </Link>
+
             <div className = 'mx-auto w-full max-w-screen-2xl p-8'>
                 <Header user = { user } />
                 <UltimosComentarios/>
-
-
             </div>
 
 
@@ -95,7 +98,6 @@ function UltimosComentarios() {
 function RatingStars({ rating }) {
     const maxStars = 5;
     const filledStars = Math.round(rating);
-
     return (
         <div className="flex items-center text-yellow-500">
             {Array.from({ length: maxStars }, (_, index) => (
@@ -111,8 +113,6 @@ function RatingStars({ rating }) {
 function Comments() {
     const user = useUser().user;
     const { comments } = useComments({ filter: { userId: user.id } });
-    console.log(comments);
-
     return (
         <div className="bg-white p-8">
             {comments.totalElements > 0 ? (

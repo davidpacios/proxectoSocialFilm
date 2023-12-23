@@ -60,11 +60,13 @@ export function useComments(query = {
 }){
     const [data, setData] = useState({ content: [], pagination: { hasNext: false, hasPrevious: false }})
     const queryString = JSON.stringify(query)
-
     useEffect(() => {
-        API.instance()
-            .findComments(JSON.parse(queryString))
-            .then(setData)
+        if (query && query.filter && query.filter.userId) {
+            API.instance()
+                .findComments(JSON.parse(queryString))
+                .then(setData)
+                .catch(error => console.error("Error al obtener comentarios:", error));
+        }
     }, [queryString])
 
     const create = comment => {

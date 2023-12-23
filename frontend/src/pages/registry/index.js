@@ -38,7 +38,10 @@ export default function Login() {
                         day,
                         month,
                         year
-                    }
+                    },
+                    country: '',
+                    picture: ''
+
                 })
                 console.log({
                     email: data.get('email'),
@@ -48,7 +51,9 @@ export default function Login() {
                         day,
                         month,
                         year
-                    }
+                    },
+                    country: '',
+                    picture: ''
                 })
 
                 history.push('/')
