@@ -3,6 +3,7 @@ package gal.usc.etse.grei.es.project.service;
 import com.github.fge.jsonpatch.JsonPatchException;
 import gal.usc.etse.grei.es.project.model.Date;
 import gal.usc.etse.grei.es.project.model.Friendship;
+import gal.usc.etse.grei.es.project.model.FriendshipWithUser;
 import gal.usc.etse.grei.es.project.model.User;
 import gal.usc.etse.grei.es.project.repository.FriendsRepository;
 import gal.usc.etse.grei.es.project.repository.UserRepository;
@@ -115,4 +116,25 @@ public class UserService {
         return friendship.getConfirmed();
     }
 
+    public List<FriendshipWithUser> getFriends(String userId) {
+        List<FriendshipWithUser> friends = new ArrayList<>();
+
+        // Obtener amistades donde el usuario es el iniciador
+        List<Friendship> friendships = friendsRepository.findByUser(userId);
+        for (Friendship friendship : friendships) {
+            if (friendship.getConfirmed()) {
+                friends.add(new FriendshipWithUser(friendship, userRepository.findById(friendship.getFriend())));
+            }
+        }
+
+        // Obtener amistades donde el usuario es el receptor
+        List<Friendship> friendships2 = friendsRepository.findByFriend(userId);
+        for (Friendship friendship : friendships2) {
+            if (friendship.getConfirmed()) {
+                friends.add(new FriendshipWithUser(friendship, userRepository.findById(friendship.getUser())));
+            }
+        }
+
+        return friends;
+    }
 }

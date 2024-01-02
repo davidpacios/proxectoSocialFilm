@@ -267,4 +267,79 @@ export default class API {
             throw error; // Puedes manejar el error según tus necesidades
         }
     }
+
+
+
+    async eliminarAmistad(userID, friendID) {
+        let url = `http://localhost:8080/users/${userID}/friend/${friendID}`;
+        try {
+            const deleteFriend = await fetch(url, {
+                method: "DELETE",
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                },
+            });
+
+            // Verificar si la respuesta tiene contenido antes de intentar parsearla
+            if (!deleteFriend.ok) {
+                throw new Error(`Error al eliminar amistad: ${deleteFriend.statusText}`);
+            }
+
+            // Verificar si hay contenido en la respuesta antes de intentar parsearla
+            const responseText = await deleteFriend.text();
+            if (!responseText) {
+                return null; // O manejar el caso donde no hay contenido
+            }
+
+            return JSON.parse(responseText);
+        } catch (error) {
+            console.error('Error al eliminar amistad:', error);
+            throw error;
+        }
+    }
+
+    async searchFriends(user) {
+        let url = `http://localhost:8080/users/${user}/friends/`
+        const friends = await fetch(url,{
+            method: "GET",
+            headers: { 'Content-Type': 'application/json',
+                'Authorization': localStorage.getItem('token')}})
+        let finalFriends = await friends.json()
+        return await finalFriends
+    }
+
+
+    //añadir amigo sabiendo que la url es /users/{id}/friend y hay que poner tu id de usuario y de body el name y el email del amigo
+    async anhadirAmigo(userID, name, email) {
+        let url = `http://localhost:8080/users/${userID}/friend`;
+        try {
+            const addFriend = await fetch(url, {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                },
+                body: JSON.stringify({ email: email,name: name})
+            });
+            console.log(JSON.stringify({ email: email,name: name}))
+
+
+            // Verificar si la respuesta tiene contenido antes de intentar parsearla
+            if (!addFriend.ok) {
+                throw new Error(`Error al añadir amigo: ${addFriend.statusText}`);
+            }
+
+            // Verificar si hay contenido en la respuesta antes de intentar parsearla
+            const responseText = await addFriend.text();
+            if (!responseText) {
+                return null; // O manejar el caso donde no hay contenido
+            }
+
+            return JSON.parse(responseText);
+        } catch (error) {
+            console.error('Error al añadir amigo:', error);
+            throw error;
+        }
+    }
 }

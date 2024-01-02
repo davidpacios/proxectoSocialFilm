@@ -84,3 +84,61 @@ export function useComments(query = {
         createComment: create
     }
 }
+
+export function useFriendship(user = null, amigo = null) {
+    const [data, setData] = useState([]);
+    const [reload, setReload] = useState(false); // Nuevo estado para recargar
+
+    useEffect(() => {
+        if (amigo === null || reload) {
+            API.instance()
+                .searchFriends(user)
+                .then((data) => {
+                    setData(data);
+                    console.log("datos hook: ", data);
+                    setReload(false); // Reiniciar el estado de recarga después de actualizar los datos
+                })
+                .catch((error) =>
+                    console.error('Error al obtener amigos:', error)
+                );
+        }
+    }, [user, reload]); // Incluye reload como dependencia del efecto
+
+    const searchFriends = (user) =>
+        API.instance()
+            .searchFriends(user)
+            .then((data) => {
+                setData(data);
+            });
+
+    const eliminarAmistad = async (userid, friendid) => {
+        try {
+            const response = await API.instance().eliminarAmistad(userid, friendid);
+            setData(response);
+            setReload(true); // Establecer el estado de recarga después de eliminar un amigo
+            return response;
+        } catch (error) {
+            console.error('Error al eliminar amistad:', error);
+            throw error;
+        }
+    };
+
+    const anhadirAmigo = async (userid, nombreAmigo, emailAmigo) => {
+        try {
+            const response = await API.instance().anhadirAmigo(userid, nombreAmigo, emailAmigo);
+            setData(response);
+            setReload(true); // Establecer el estado de recarga después de añadir un amigo
+            return response;
+        } catch (error) {
+            console.error('Error al añadir amigo:', error);
+            throw error;
+        }
+    };
+
+    return {
+        friendship: data,
+        searchFriends,
+        eliminarAmistad,
+        anhadirAmigo
+    };
+}

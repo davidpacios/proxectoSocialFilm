@@ -2,6 +2,7 @@ package gal.usc.etse.grei.es.project.controller;
 
 import com.github.fge.jsonpatch.JsonPatchException;
 import gal.usc.etse.grei.es.project.model.Friendship;
+import gal.usc.etse.grei.es.project.model.FriendshipWithUser;
 import gal.usc.etse.grei.es.project.model.User;
 import gal.usc.etse.grei.es.project.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -381,6 +382,13 @@ public class UserController {
         userService.deleteUserFriendship(user, friend);
 
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    //Get all friends of a user
+    @GetMapping("/{userId}/friends/")
+    public ResponseEntity<List<FriendshipWithUser>> getAllFriends(@PathVariable("userId") String id) {
+        List<FriendshipWithUser> friends = userService.getFriends(id);
+        return ResponseEntity.ok(friends);
     }
 
 
