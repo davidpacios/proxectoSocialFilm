@@ -144,7 +144,7 @@ function Header({ user, editedUser, updateUser }) {
     </header>
 }
 
-function Tagline({ user, updateUser }) {
+function Tagline({ user, editedUser, updateUser }) {
     if (user) {
         return (
             <div className="flex justify-between items-center">
@@ -157,7 +157,7 @@ function Tagline({ user, updateUser }) {
                     <textarea className={`bg-black bg-opacity-50 backdrop-filter backdrop-blur 
                   text-center outline-none text-3xl font-semibold text-black px-8 py-4`}
                         placeholder={user.country || 'country'}
-                        value={user.country}
+                        value={editedUser.country}
                         name={'country'}
                         onChange={(e) => {
                             updateUser(e);}}>

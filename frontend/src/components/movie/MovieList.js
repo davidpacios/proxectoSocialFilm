@@ -53,16 +53,28 @@ export function MovieList({
         </section>
 }
 
-function Poster({className = '', movie}) {
-    return <li className = {`w-full transition transform cursor-pointer rounded-md bg-white overflow-hidden relative shadow
-                             hover:scale-125 hover:shadow-md hover:z-20
-                             ${className}`}
-               style = {{ aspectRatio: '2/3' }}
-    >
-        <Link to = { `/movies/${movie.id}` }>
-            <img className = 'w-full h-full object-cover'
-                 src = { movie.resources.find(res => res.type === 'POSTER').url }
-                 alt = { `${movie.title } poster` } />
-        </Link>
-    </li>
+
+function Poster({ className = '', movie }) {
+    const defaultPosterUrl = "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.shutterstock.com%2Fsearch%2Fmovie-poster&psig=AOvVaw0fYY5CYIkpWhnHkBor1oYF&ust=1670580471195000&source=images&cd=vfe&ved=0CBAQjRxqFwoTCMihrq3j6fsCFQAAAAAdAAAAABAE";
+
+    return (
+        <li
+            className={`w-full transition transform cursor-pointer rounded-md bg-white overflow-hidden relative shadow
+                        hover:scale-125 hover:shadow-md hover:z-20
+                        ${className}`}
+            style={{ aspectRatio: '2/3' }}
+        >
+            <Link to={`/movies/${movie.id}`}>
+                <img
+                    className='w-full h-full object-cover'
+                    src={
+                        movie.resources && movie.resources.find(res => res.type === 'POSTER')
+                            ? movie.resources.find(res => res.type === 'POSTER').url
+                            : defaultPosterUrl
+                    }
+                    alt={`${movie.title} poster`}
+                />
+            </Link>
+        </li>
+    );
 }

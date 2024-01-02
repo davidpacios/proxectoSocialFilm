@@ -37,6 +37,65 @@ export default class API {
 
         return true
     }
+/*
+    async findMovies(
+        {
+            filter: { genre = '', title = '', status = '' } = { genre: '', title: '', status: '' },
+            sort,
+            pagination: { page, size  } = { page: 0, size: 10000 }
+        } = {
+            filter: { genre: '', title: '', status: '' },
+            sort: {},
+            pagination: { page: 0, size:10000 }
+        }
+    ) {
+        try {
+            let queryString = ``;
+            //si page y size no son undefined, se añaden a la query
+            if (page !== undefined) {
+                queryString += `page=${page}`;
+            }
+            if (size !== undefined) {
+                queryString += `&size=${size}`;
+            }
+
+            if (title) {
+                queryString += `&title=${encodeURIComponent(title)}`;
+            }
+            if (genre) {
+                queryString += `&genre=${encodeURIComponent(genre)}`;
+            }
+            if (status) {
+                queryString += `&status=${encodeURIComponent(status)}`;
+            }
+            if (sort) {
+                queryString += `&sort=${encodeURIComponent(sort)}`;
+
+            }
+
+            console.log(`http://localhost:8080/movies?${queryString}`)
+
+            const response = await fetch(`http://localhost:8080/movies?${queryString}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                },
+            });
+
+            if (response.ok) {
+                return await response.json();
+            } else {
+                // Manejar errores si la respuesta no es exitosa
+                const errorData = await response.json();
+                console.error('Error al obtener películas:', errorData);
+                throw new Error('Error al obtener películas');
+            }
+        } catch (error) {
+            console.error('Error en la solicitud:', error);
+            throw error; // Puedes manejar el error según tus necesidades
+        }
+    }*/
 
     async findMovies(
         {
@@ -66,6 +125,7 @@ export default class API {
             resolve(data)
         })
     }
+
 
     async findMovie(id) {
         const response = await fetch(`http://localhost:8080/movies/${id}`, {
@@ -103,7 +163,6 @@ export default class API {
             const pathArray = window.location.pathname.split('/');
             const movieIdIndex = pathArray.indexOf('movies') + 1; // Index siguiente al de 'movies'
             movieId = movieIdIndex < pathArray.length ? pathArray[movieIdIndex] : '';
-            //movieId = '716354' //Esta pelicula tiene comentarios //TODO: PRuebas
             if (movieId) {
                 queryString += `movieId=${movieId}&`;
             }
